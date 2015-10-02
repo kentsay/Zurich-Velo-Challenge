@@ -18,5 +18,7 @@ Data set we are planning to use in this app as shown as follow:
 * Verfügbarkeit der Velos von «Züri rollt»
 * Recommended Bike Routes in Zurich(Veloland, Bikemap.net)
 
+Part of the data is provided by [Zurich Open Data](https://data.stadt-zuerich.ch/).
+
 ### Mockup
 We created a mockup of our app by using [popapp](popapp.in). You can found it [here](https://popapp.in/w/projects/560d4312afde789108c11025/mockups).
