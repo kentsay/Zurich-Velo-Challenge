@@ -8,7 +8,7 @@
 import scrapy
 
 
-class RoutecrawlerItem(scrapy.Item):
+class RouteCrawlerItem(scrapy.Item):
     # define the fields for your item here like:
     name = scrapy.Field()
     distance = scrapy.Field()
