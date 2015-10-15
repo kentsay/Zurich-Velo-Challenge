@@ -40,3 +40,7 @@ captures/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# SQLite files
+*.db
+
