@@ -1,79 +1,52 @@
 package ch.ethz.jeromel.wmsmaptest;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.os.Bundle;
+import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.os.AsyncTask;
-import android.os.Debug;
-import android.os.StrictMode;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
+import android.graphics.Bitmap;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+import java.util.LinkedList;
 
-import android.view.Display;
-import android.view.View;
-import android.view.ViewGroupOverlay;
-import android.view.Menu;
-import android.view.MenuItem;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.VisibleRegion;
-
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 
 
-import java.util.List;
+
 
 public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
 
-    public static GoogleMap mMap;
-    private MapView mapView;
+    public GoogleMap mMap;
+    public LinkedList<GroundOverlay> allOverlays = new LinkedList<>();
     private static Projection projection;
     private static LatLngBounds mapBounds;
     private static int [] dimensions = new int[2];
-    private Canvas canvas = new Canvas();
-    private static Bitmap image;
     private LatLng  poslatlong;
-    private WMSLoader wmsClient = new WMSLoader();
-
-    private static Display display;
 
     // getter methods:
     public static LatLngBounds getBounds() {return mapBounds;}
-
     public static int[] getDimensions () {return dimensions;}
-
-    public static GoogleMap getmMap() {return mMap;}
-
-    public static  Display getDisplay() { return display; }
-
     public static Projection getProjection(){ return projection;}
 
-
     // setter methods
-    public static void setImage(Bitmap nImage) {image = nImage;}
-    public static void setmMap(GoogleMap nMap) {mMap = nMap;}
     public static void setProjection(Projection nProjection) {projection = nProjection;}
     public static void setMapBounds(LatLngBounds nMapBounds) {mapBounds = nMapBounds;}
 
@@ -85,8 +58,7 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_map);
 
-        display = getWindowManager().getDefaultDisplay();
-
+        Display display = getWindowManager().getDefaultDisplay();
         // define the necessary size of the map and create the corresponding URL
         Point size = new Point();
         display.getSize(size);
@@ -120,26 +92,29 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap nMap) {
-        setmMap(nMap);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(poslatlong, 12));
+        mMap = nMap;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(poslatlong, 15));
+        Projection  tempProjection = mMap.getProjection();
+        setProjection(tempProjection);
+        mMap.setOnCameraChangeListener(getCameraChangeListener());
+        //Log.d("ID of mMap", String.valueOf(mMap.hashCode()));
         loadBasemap loadBasemapThread = new loadBasemap();
         loadBasemapThread.execute();
     }
 
-
-
-
-
-    // This is done, when the botton is clicked
-    public void doTheLoad(View view) {
-
-        // when the basemap of Google Maps is loaded, we load the data from opendata zurich and
-        // display them as an overlay
-        //image = loadBasemap.execute();
-        //Paint semitransparent = new Paint();
-        //semitransparent.setAlpha(0x888);
-        //canvas.drawBitmap(image, 0, 0, semitransparent);
+    public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
+        return new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition camPos){
+                Projection newProjection = mMap.getProjection();
+                // mMap.clear();
+                loadBasemap loadBasemapThread = new loadBasemap();
+                loadBasemapThread.execute();
+                setProjection(newProjection);
+            }
+        };
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -170,11 +145,8 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
         @Override
         protected Bitmap doInBackground(String... urls) {
             // get all the necessary objects:
-            GoogleMap mMap = getmMap();
-            Projection projection = mMap.getProjection();
+            Projection projection = getProjection();
             int[] dimensions = getDimensions();
-            Display display = getDisplay();
-
 
             // Coordinate system of the display: origin upper-left, x right (width), y down (height)
             LatLng ur = projection.fromScreenLocation(new Point(dimensions[0],0)); //northeast
@@ -194,7 +166,7 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
                     Double.toString(bounds[0]) + "," + Double.toString(bounds[1]) + "," + Double.toString(bounds[2]) + ","
                     + Double.toString(bounds[3]) + "&WIDTH=" + dimensions[0] + "&HEIGHT=" + dimensions[1] + "&Layers=Uebersichtsplan";
 
-            Log.d("WMSLoader:WMS URL", wmsUrl);
+            Log.d("WMS URL", wmsUrl);
             URL url = null;
 
             try {
@@ -219,12 +191,20 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
 
             // get the current bounds of the view
             LatLngBounds mapBounds = getBounds();
-            Log.d("mapBounds:", Double.toString(mapBounds.northeast.latitude));
-            GroundOverlayOptions overlayOption = new GroundOverlayOptions()
+            // create new overlay
+            GroundOverlay newOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
                     .image(BitmapDescriptorFactory.fromBitmap(bitmap))
-                    .positionFromBounds(mapBounds);
-            GoogleMap mMap = getmMap();
-            mMap.addGroundOverlay(overlayOption);
+                    .positionFromBounds(mapBounds));
+            allOverlays.push(newOverlay);
+            //  if the total number of overlays is bigger than 3, the last is removed
+            if (allOverlays.size()> 3) {
+                Log.d("allOverlay", "Array is bigger than 3!");
+                GroundOverlay remObject = allOverlays.getLast();
+                remObject.remove(); //removes overlay from the map
+                allOverlays.removeLast(); // removes the entry in the LinkedList
+
+            }
+
         }
     }
 
