@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -44,7 +45,7 @@ import android.graphics.Paint;
 
 import java.util.List;
 
-public class ShowMap extends AppCompatActivity {
+public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
 
     public static GoogleMap mMap;
     private MapView mapView;
@@ -78,37 +79,60 @@ public class ShowMap extends AppCompatActivity {
 
     // code:
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_map);
 
-        // set the policy to allow network on main thread
-        // TODO create new thread to execute the download of the WMS data
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         display = getWindowManager().getDefaultDisplay();
+
+        // define the necessary size of the map and create the corresponding URL
+        Point size = new Point();
+        display.getSize(size);
+        dimensions[0] = size.x; //width
+        dimensions[1] = size.y; //height
+
+        // get the position from the TextView from before
+        double[] position = MainActivity.getPos();
+        poslatlong = new LatLng(position[0],position[1]);
+
+
+        // Getting reference to the SupportMapFragment of activity_main.xml
+        SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
+        // Getting GoogleMap object from the fragment
+        fm.getMapAsync(this);
+
+        //mMap.setMyLocationEnabled(true);
+
+
         // execute the thread to load the Google Map (which executes the load of the WMS, if this
         // thread is done -> onPostExecute)
-        loadGoogleMaps();
-
-
-
-
-
+        //loadGoogleMaps loadGoogleMapsThread = new loadGoogleMaps();
+        //loadGoogleMapsThread.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
 
 
                 //"bbox=676000,241000,690000,255000&WIDTH=800&HEIGHT=800&Layers=Uebersichtsplan_2014";
+
+
     }
 
-    // This is done, when the botton is clicked
-
-    public void doTheLoad(View view) {
-
-
+    @Override
+    public void onMapReady(GoogleMap nMap) {
+        setmMap(nMap);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(poslatlong, 12));
         loadBasemap loadBasemapThread = new loadBasemap();
         loadBasemapThread.execute();
+    }
+
+
+
+
+
+    // This is done, when the botton is clicked
+    public void doTheLoad(View view) {
+
         // when the basemap of Google Maps is loaded, we load the data from opendata zurich and
         // display them as an overlay
         //image = loadBasemap.execute();
@@ -139,29 +163,6 @@ public class ShowMap extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadGoogleMaps()  {
-
-            // define the necessary size of the map and create the corresponding URL
-            Point size = new Point();
-            display.getSize(size);
-            dimensions[0] = size.x; //width
-            dimensions[1] = size.y; //height
-
-            // get the position from the TextView from before
-            double[] position = MainActivity.getPos();
-            poslatlong = new LatLng(position[0],position[1]);
-
-
-            // Getting reference to the SupportMapFragment of activity_main.xml
-            SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-
-            // Getting GoogleMap object from the fragment
-            mMap = fm.getMap();
-
-            mMap.setMyLocationEnabled(true);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(poslatlong, 12));
-
-    }
 
     public class loadBasemap extends AsyncTask<String, Void, Bitmap>{
 
@@ -170,7 +171,6 @@ public class ShowMap extends AppCompatActivity {
         protected Bitmap doInBackground(String... urls) {
             // get all the necessary objects:
             GoogleMap mMap = getmMap();
-            if (mMap == null ) Log.d("Map is null", " ");
             Projection projection = mMap.getProjection();
             int[] dimensions = getDimensions();
             Display display = getDisplay();
@@ -211,7 +211,6 @@ public class ShowMap extends AppCompatActivity {
             } catch (IOException e) {
                 Log.wtf("WMSLoader:Stream", "****************** Error in WMSLoader: " + e.getMessage());
             }
-
             return BitmapFactory.decodeStream(input);
         }
 

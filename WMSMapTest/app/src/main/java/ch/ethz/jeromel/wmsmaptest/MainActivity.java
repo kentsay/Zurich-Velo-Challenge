@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static double[] getPos () {
         // returns the position entered
-        // coment
+
         return position;
     }
 
