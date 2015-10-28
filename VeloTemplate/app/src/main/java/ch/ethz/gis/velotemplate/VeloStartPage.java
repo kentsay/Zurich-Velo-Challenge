@@ -24,10 +24,8 @@ public class VeloStartPage extends Activity {
 
             @Override
             public void onClick(View arg0) {
-
                 Intent simple = new Intent(VeloStartPage.this,VeloHome.class);
                 startActivity(simple);
-
             }
         });
 
@@ -37,7 +35,6 @@ public class VeloStartPage extends Activity {
             public void onClick(View v) {
                 Intent base = new Intent(VeloStartPage.this,VeloHome.class);
                 startActivity(base);
-
             }
         });
 
@@ -47,7 +44,6 @@ public class VeloStartPage extends Activity {
             public void onClick(View v) {
                 Intent base = new Intent(VeloStartPage.this,VeloHome.class);
                 startActivity(base);
-
             }
         });
     }

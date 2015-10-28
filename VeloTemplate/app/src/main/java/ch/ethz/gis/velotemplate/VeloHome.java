@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import ch.ethz.gis.helper.BikeNetDatabaseHelper;
+
 public class VeloHome extends ListActivity {
 
     VeloRouteAdapter veloAdapter;
@@ -45,15 +47,8 @@ public class VeloHome extends ListActivity {
     public List<VeloRoute> getDataForListView()
     {
         List<VeloRoute> routeList = new ArrayList<VeloRoute>();
-        Random rmd = new Random();
-
-        for(int i=0;i<10;i++)
-        {
-            VeloRoute route = new VeloRoute();
-            route.route_name = "Route " + i;
-            route.route_distance = String.valueOf(rmd.nextInt());
-            routeList.add(route);
-        }
+        BikeNetDatabaseHelper dbHelper = BikeNetDatabaseHelper.getInstance(this);
+        routeList = dbHelper.getVeloRoutes();
         return routeList;
     }
 
@@ -89,7 +84,7 @@ public class VeloHome extends ListActivity {
             VeloRoute route = routeList.get(position);
 
             routeName.setText(route.route_name);
-            routeDistance.setText(route.route_distance);
+            routeDistance.setText(route.route_distance + "km");
 
             return convertView;
         }
