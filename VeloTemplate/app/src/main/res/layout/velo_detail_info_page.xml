@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/route_info_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/route_map"
+        android:text="Route Name"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/route_info_elevation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/route_map"
+        android:layout_alignLeft="@+id/route_name"
+        android:text="Route Information" />
+
+    <TextView
+        android:id="@+id/route_info_snapshot_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/route_map"
+        android:layout_alignLeft="@+id/route_name"
+        android:text="Route Information" />
+
+    <TextView
+        android:id="@+id/route_info_kml_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/route_map"
+        android:layout_alignLeft="@+id/route_name"
+        android:text="Route Information" />
+
+    <TextView
+        android:id="@+id/route_info_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/route_map"
+        android:layout_alignLeft="@+id/route_name"
+        android:text="Route Information" />
+
+
+</LinearLayout>

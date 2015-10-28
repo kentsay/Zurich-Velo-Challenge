@@ -1,9 +1,11 @@
 package ch.ethz.gis.velotemplate;
 
+import java.io.Serializable;
+
 /**
  * Created by kentsay on 23/10/2015.
  */
-public class VeloRoute {
+public class VeloRoute implements Serializable {
     String route_name;
     String route_distance;
     String route_height;

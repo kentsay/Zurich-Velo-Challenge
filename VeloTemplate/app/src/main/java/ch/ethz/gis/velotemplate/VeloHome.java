@@ -2,7 +2,7 @@ package ch.ethz.gis.velotemplate;
 
 import android.app.ListActivity;
 import android.content.Context;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,17 +11,19 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import ch.ethz.gis.helper.BikeNetDatabaseHelper;
 
 public class VeloHome extends ListActivity {
 
-    VeloRouteAdapter veloAdapter;
+    public final static String ID_EXTRA = "ch.ethz.gis.VeloTemplate._ID";
+    public VeloRouteAdapter veloAdapter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +36,10 @@ public class VeloHome extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         VeloRoute route = veloAdapter.getVeloRoute(position);
-        Toast.makeText(VeloHome.this, route.route_name, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(VeloHome.this, route.route_name, Toast.LENGTH_SHORT).show();
+        Intent routeInfo = new Intent(VeloHome.this, RouteInfoActivity.class);
+        routeInfo.putExtra(ID_EXTRA, route);
+        startActivity(routeInfo);
     }
 
     @Override
@@ -89,7 +94,7 @@ public class VeloHome extends ListActivity {
             return convertView;
         }
 
-        public VeloRoute getVeloRoute(int position)
+        private VeloRoute getVeloRoute(int position)
         {
             return routeList.get(position);
         }

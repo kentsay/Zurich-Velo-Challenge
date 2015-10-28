@@ -23,5 +23,6 @@
             </intent-filter>
         </activity>
         <activity android:name="ch.ethz.gis.velotemplate.VeloHome"/>
+        <activity android:name=".RouteInfoActivity" />
     </application>
 </manifest>
