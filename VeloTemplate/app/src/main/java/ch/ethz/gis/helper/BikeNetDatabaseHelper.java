@@ -94,6 +94,12 @@ public class BikeNetDatabaseHelper extends SQLiteOpenHelper {
     //Copy the database from assets
     private void copyDataBase() throws IOException
     {
+        //check if DATABASE_PATH exists (e.g: SamSung Nexus)
+        File folder = new File(DATABASE_PATH);
+        if (!folder.exists()) {
+            folder.mkdir();
+            Log.v(TAG, "database folder missing, created folder");
+        }
         InputStream mInput = mContext.getAssets().open(DATABASE_NAME);
         String outFileName = DATABASE_PATH + DATABASE_NAME;
         OutputStream mOutput = new FileOutputStream(outFileName);
