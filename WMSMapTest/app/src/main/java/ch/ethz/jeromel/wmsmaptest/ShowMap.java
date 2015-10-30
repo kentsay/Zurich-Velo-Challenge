@@ -2,6 +2,7 @@ package ch.ethz.jeromel.wmsmaptest;
 
 import android.os.Bundle;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,8 +30,15 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.kml.KmlContainer;
+import com.google.maps.android.kml.KmlGeometry;
+import com.google.maps.android.kml.KmlLayer;
+import com.google.maps.android.kml.KmlLineString;
+import com.google.maps.android.kml.KmlPlacemark;
+import com.google.maps.android.kml.KmlPoint;
+import com.google.maps.android.kml.KmlPolygon;
 
-
+import org.xmlpull.v1.XmlPullParserException;
 
 
 public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
@@ -40,6 +49,9 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
     private static LatLngBounds mapBounds;
     private static int [] dimensions = new int[2];
     private LatLng  poslatlong;
+    // this string to the KML file is just for testing. For further developing, this
+    // string has to replaced by an other argument
+    private String kmlurl = "http://mtk2.toursprung.com/export/outdoorish_bikemap_routes/3017699.kml?69927758";
 
     // getter methods:
     public static LatLngBounds getBounds() {return mapBounds;}
@@ -97,9 +109,12 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
         Projection  tempProjection = mMap.getProjection();
         setProjection(tempProjection);
         mMap.setOnCameraChangeListener(getCameraChangeListener());
-        //Log.d("ID of mMap", String.valueOf(mMap.hashCode()));
-        loadBasemap loadBasemapThread = new loadBasemap();
-        loadBasemapThread.execute();
+        //loadBasemap loadBasemapThread = new loadBasemap();
+        //loadBasemapThread.execute();
+        // test the KML download
+        String[] wmsurlsTest = {kmlurl};
+        loadKML loadKMLThread = new loadKML();
+        loadKMLThread.execute(wmsurlsTest);
     }
 
     public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
@@ -107,7 +122,6 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onCameraChange(CameraPosition camPos){
                 Projection newProjection = mMap.getProjection();
-                // mMap.clear();
                 loadBasemap loadBasemapThread = new loadBasemap();
                 loadBasemapThread.execute();
                 setProjection(newProjection);
@@ -161,52 +175,131 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
             bounds[2] = ur.latitude;
             bounds[3] = ur.longitude;
 
-            String wmsUrl = "http://www.gis.stadt-zuerich.ch/maps/services/wms/WMS-ZH-STZH-OGD/MapServer/WMSServer?" +
-                    "VERSION=1.3.0&REQUEST=GetMap&CRS=EPSG:4326&STYLES=default&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=FALSE&BBOX=" +
-                    Double.toString(bounds[0]) + "," + Double.toString(bounds[1]) + "," + Double.toString(bounds[2]) + ","
-                    + Double.toString(bounds[3]) + "&WIDTH=" + dimensions[0] + "&HEIGHT=" + dimensions[1] + "&Layers=Uebersichtsplan";
+            //check if the wanted layer is outside of the queryable layer -> download not needed
+            // layer bounding box of opendata Zurich:
+            // http://www.gis.stadt-zuerich.ch/maps/services/wms/WMS-ZH-STZH-OGD/MapServer/WMSServer?SERVICE=WMS&Request=GetCapabilities
+            // <BoundingBox CRS="EPSG:4326" minx="47.310593" miny="8.427483" maxx="47.447433" maxy="8.633024"/>
+            if (bounds[0] > 47.310593 && bounds[1] > 8.427483 && bounds[2] < 47.447433 && bounds[3] < 8.633024) {
+                // we are inside the bounds -> download layer
+                String wmsUrl = "http://www.gis.stadt-zuerich.ch/maps/services/wms/WMS-ZH-STZH-OGD/MapServer/WMSServer?" +
+                        "VERSION=1.3.0&REQUEST=GetMap&CRS=EPSG:4326&STYLES=default&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=TRUE&BBOX=" +
+                        Double.toString(bounds[0]) + "," + Double.toString(bounds[1]) + "," + Double.toString(bounds[2]) + ","
+                        + Double.toString(bounds[3]) + "&WIDTH=" + dimensions[0] + "&HEIGHT=" + dimensions[1] + "&Layers=Uebersichtsplan";
 
-            Log.d("WMS URL", wmsUrl);
-            URL url = null;
+                Log.d("WMS URL", wmsUrl);
+                URL url = null;
 
-            try {
+                try {
 
-                url = new URL(wmsUrl);
+                    url = new URL(wmsUrl);
 
 
-            } catch (MalformedURLException e) {
-                Log.e("WMSLoader:Stream", e.getMessage());
+                } catch (MalformedURLException e) {
+                    Log.e("WMSLoader:Stream", e.getMessage());
+                }
+                InputStream input = null;
+                try {
+                    input = url.openStream();
+                } catch (IOException e) {
+                    Log.wtf("WMSLoader:Stream", "****************** Error in WMSLoader: " + e.getMessage());
+                }
+                return BitmapFactory.decodeStream(input);
+            } else {
+                // bounds are outside the boundingBox
+                String mess = "Outside of bounding box! \n Overlay is not loaded!";
+                Log.d("WMSLoader" , mess);
+                //Toast.makeText(getApplicationContext(),mess,Toast.LENGTH_SHORT).show();
+                return null;
             }
-            InputStream input = null;
-            try {
-                input = url.openStream();
-            } catch (IOException e) {
-                Log.wtf("WMSLoader:Stream", "****************** Error in WMSLoader: " + e.getMessage());
-            }
-            return BitmapFactory.decodeStream(input);
+
+
         }
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
 
-            // get the current bounds of the view
-            LatLngBounds mapBounds = getBounds();
-            // create new overlay
-            GroundOverlay newOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
-                    .image(BitmapDescriptorFactory.fromBitmap(bitmap))
-                    .positionFromBounds(mapBounds));
-            allOverlays.push(newOverlay);
-            //  if the total number of overlays is bigger than 3, the last is removed
-            if (allOverlays.size()> 3) {
-                Log.d("allOverlay", "Array is bigger than 3!");
-                GroundOverlay remObject = allOverlays.getLast();
-                remObject.remove(); //removes overlay from the map
-                allOverlays.removeLast(); // removes the entry in the LinkedList
+            if (bitmap != null) {
+                // bitmap is ready!
+                // get the current bounds of the view
+                LatLngBounds mapBounds = getBounds();
+                // create new overlay
+                GroundOverlay newOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
+                        .image(BitmapDescriptorFactory.fromBitmap(bitmap))
+                        .positionFromBounds(mapBounds));
+                allOverlays.push(newOverlay);
+                //  if the total number of overlays is bigger than 3, the last is removed
+                if (allOverlays.size()> 3) {
+                    Log.d("allOverlay", "Array is bigger than 3!");
+                    GroundOverlay remObject = allOverlays.getLast();
+                    remObject.remove(); //removes overlay from the map
+                    allOverlays.removeLast(); // removes the entry in the LinkedList
 
+                }
             }
 
         }
     }
 
+    public class loadKML extends AsyncTask<String, Void, KmlLayer> {
+
+        @Override
+        protected KmlLayer doInBackground(String... kmlurls) {
+
+            Looper.prepare();
+            String kmlUrl = kmlurls[0];
+            URL url = null;
+            KmlLayer kmlLayer = null;
+
+            try {
+
+                url = new URL(kmlUrl);
+
+
+            } catch (MalformedURLException e) {
+                Log.e("KMLLoader:Stream", e.getMessage());
+            }
+            InputStream input = null;
+            try {
+                input = url.openStream();
+                kmlLayer = new KmlLayer(mMap,input,getApplicationContext());
+            } catch (IOException e) {
+                Log.e("KMLLoader:StreamIO", "****************** Error in KMLLoader: " + e.getMessage());
+            } catch (XmlPullParserException e) {
+                Log.e("KMSLoader:StreamXML", "Error setting the kml layer: " + e.getMessage());
+            }
+
+            return kmlLayer;
+        }
+
+        @Override
+        protected void onPostExecute(KmlLayer kmlLayer) {
+
+            // Iterate through the KML file to find its extend (bounds)
+            KmlContainer container = kmlLayer.getContainers().iterator().next();
+            //Retrieve the first placemark in the nested container
+            KmlPlacemark placemark = container.getPlacemarks().iterator().next();
+            //Retrieve a polygon object in a placemark
+            KmlLineString lineString = (KmlLineString) placemark.getGeometry();
+            //Create LatLngBounds of the outer coordinates of the polygon
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (LatLng latLng : lineString.getGeometryObject()) {
+                builder.include(latLng);
+            }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 2));
+
+            // add the layer to the map
+            try {
+                kmlLayer.addLayerToMap();
+            } catch (IOException e) {
+                Log.e("KMLLoader:AddLayerIO" , e.getMessage());
+            } catch(XmlPullParserException e) {
+                Log.e("KMLLoader:AddLayerXML" , e.getMessage());
+            }
+
+
+
+
+        }
+    }
 }
 

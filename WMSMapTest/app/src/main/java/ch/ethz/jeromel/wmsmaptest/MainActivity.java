@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         TextView lon = (TextView)findViewById(R.id.StartActivity_long_value);
 
         // set the position to Zurich City
-        lat.setText("47.375806");;
+        lat.setText("47.375806");
         lon.setText("8.528130");
 
     }
