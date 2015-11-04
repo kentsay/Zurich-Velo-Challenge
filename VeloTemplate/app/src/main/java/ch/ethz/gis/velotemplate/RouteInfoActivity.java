@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.widget.TextView;
 
 /**
@@ -29,4 +30,12 @@ public class RouteInfoActivity extends Activity {
         snapeshot_url.setText("Snapshot url: " + route.getSnapshot_url());
         kml_url.setText("KML url: " + route.getKml_url());
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
 }

@@ -2,10 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/Favorite"
-        android:icon="@drawable/ic_action_favorite"
+        android:id="@+id/search"
+        android:icon="@drawable/ic_action_search"
         android:showAsAction="ifRoom"
-        android:title="Favorite">
+        android:title="Search">
     </item>
 
 </menu>
