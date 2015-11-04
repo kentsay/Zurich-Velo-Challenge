@@ -50,7 +50,7 @@ public class RouteInfoActivity extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         fav = menu.findItem(R.id.action_bar_favorite_add);
         unfav = menu.findItem(R.id.action_bar_favorite_remove);
-        if (dbHelper.checkFavoriteRouteExists(route.getId())) {
+        if (dbHelper.checkFavouriteRouteExists(route.getId())) {
             fav.setVisible(false);
             unfav.setVisible(true);
         } else {
@@ -67,13 +67,13 @@ public class RouteInfoActivity extends Activity {
                 //reset action bar icon to show fav or unfav
                 fav.setVisible(false);
                 unfav.setVisible(true);
-                dbHelper.addFavoriteRoute(route);
+                dbHelper.addFavouriteRoute(route);
                 return true;
             case R.id.action_bar_favorite_remove:
                 //reset action bar icon to show fav or unfav
                 unfav.setVisible(false);
                 fav.setVisible(true);
-                dbHelper.deleteFromFavorite(route.getId());
+                dbHelper.deleteFromFavourite(route.getId());
                 return true;
             default:
                 // If we got here, the user's action was not recognized.

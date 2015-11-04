@@ -32,7 +32,7 @@ public class VeloDbHelper extends SQLiteOpenHelper {
 
     //Table Names
     private static final String TABLE_ROUTES = "routes";
-    private static final String TABLE_FAVORITE_ROUTES = "favorite";
+    private static final String TABLE_FAVOURITE_ROUTES = "favourite";
 
     //Table Columns
     private static final String KEY_ROUTES_ID           = "id";
@@ -78,12 +78,12 @@ public class VeloDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_FAVORITE_ROUTE_TABLE = "CREATE TABLE " + TABLE_FAVORITE_ROUTES +
+        String CREATE_FAVOURITE_ROUTE_TABLE = "CREATE TABLE " + TABLE_FAVOURITE_ROUTES +
                 "(" +
                 KEY_ROUTES_ID + " INTEGER PRIMARY KEY" + // Define a primary key
                 ")";
 
-        db.execSQL(CREATE_FAVORITE_ROUTE_TABLE);
+        db.execSQL(CREATE_FAVOURITE_ROUTE_TABLE);
     }
 
     @Override
@@ -151,8 +151,8 @@ public class VeloDbHelper extends SQLiteOpenHelper {
         return routesList;
     }
 
-    // Insert a route path into the DB user favorite table
-    public void addFavoriteRoute(VeloRoute route) {
+    // Insert a route path into the DB user favourite table
+    public void addFavouriteRoute(VeloRoute route) {
         // Create and/or open the database for writing
         SQLiteDatabase db = getWritableDatabase();
 
@@ -163,7 +163,7 @@ public class VeloDbHelper extends SQLiteOpenHelper {
             values.put(KEY_ROUTES_ID, routeId);
 
             // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
-            db.insertOrThrow(TABLE_FAVORITE_ROUTES, null, values);
+            db.insertOrThrow(TABLE_FAVOURITE_ROUTES, null, values);
             db.setTransactionSuccessful();
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to add post to database");
@@ -172,9 +172,10 @@ public class VeloDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean checkFavoriteRouteExists(String id) {
+    // Checked if the route has been favourite or not
+    public boolean checkFavouriteRouteExists(String id) {
         boolean exists = false;
-        String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s WHERE id=?", TABLE_FAVORITE_ROUTES);
+        String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s WHERE id=?", TABLE_FAVOURITE_ROUTES);
 
         db = getReadableDatabase();
         Cursor cursor = db.rawQuery(ROUTES_SELECT_QUERY, new String[] {id});
@@ -195,8 +196,13 @@ public class VeloDbHelper extends SQLiteOpenHelper {
         return exists;
     }
 
-    public void getAllFavoriteRoutes() {
-        String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s", TABLE_FAVORITE_ROUTES);
+    // Get user favourite routes from db
+    public List<VeloRoute> getAllFavoruiteRoutes() {
+        List<VeloRoute> routesList = new ArrayList<>();
+        String ROUTES_SELECT_QUERY = String.format(
+                "SELECT fav.id, r.name, r.distance, r.snapshot_url, r.elevation, r.kml_url " +
+                        "FROM %s as fav JOIN %s as r ON fav.id=r.id;",
+                TABLE_FAVOURITE_ROUTES, TABLE_ROUTES);
 
         db = getReadableDatabase();
         Cursor cursor = db.rawQuery(ROUTES_SELECT_QUERY, null);
@@ -204,15 +210,14 @@ public class VeloDbHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     Log.v("DB", cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ID)));
-                    //todo: join detail with table routes
-//                    VeloRoute route = new VeloRoute();
-//                    route.setId(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ID)));
-//                    route.setRoute_name(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_NAME)));
-//                    route.setElevation(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ELEVATION)));
-//                    route.setRoute_distance(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_DISTANCE)));
-//                    route.setSnapshot_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_SNAPSHOT_URL)));
-//                    route.setKml_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_KML_URL)));
-//                    routesList.add(route);
+                    VeloRoute route = new VeloRoute();
+                    route.setId(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ID)));
+                    route.setRoute_name(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_NAME)));
+                    route.setElevation(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ELEVATION)));
+                    route.setRoute_distance(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_DISTANCE)));
+                    route.setSnapshot_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_SNAPSHOT_URL)));
+                    route.setKml_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_KML_URL)));
+                    routesList.add(route);
                 } while(cursor.moveToNext());
             }
         } catch (Exception e) {
@@ -222,13 +227,15 @@ public class VeloDbHelper extends SQLiteOpenHelper {
                 cursor.close();
             }
         }
+        return routesList;
     }
 
-    public void deleteFromFavorite(String id) {
+    // Delete route from favourite
+    public void deleteFromFavourite(String id) {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
-            db.delete(TABLE_FAVORITE_ROUTES, "id=?", new String[] {id});
+            db.delete(TABLE_FAVOURITE_ROUTES, "id=?", new String[] {id});
             db.setTransactionSuccessful();
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to delete all posts and users");
