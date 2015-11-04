@@ -1,5 +1,6 @@
 package ch.ethz.gis.helper;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -31,8 +32,10 @@ public class VeloDbHelper extends SQLiteOpenHelper {
 
     //Table Names
     private static final String TABLE_ROUTES = "routes";
+    private static final String TABLE_FAVORITE_ROUTES = "favorite";
 
     //Table Columns
+    private static final String KEY_ROUTES_ID           = "id";
     private static final String KEY_ROUTES_DISTANCE     = "distance";
     private static final String KEY_ROUTES_SNAPSHOT_URL = "snapshot_url";
     private static final String KEY_ROUTES_ELEVATION    = "elevation";
@@ -75,7 +78,12 @@ public class VeloDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        String CREATE_FAVORITE_ROUTE_TABLE = "CREATE TABLE " + TABLE_FAVORITE_ROUTES +
+                "(" +
+                KEY_ROUTES_ID + " INTEGER PRIMARY KEY" + // Define a primary key
+                ")";
 
+        db.execSQL(CREATE_FAVORITE_ROUTE_TABLE);
     }
 
     @Override
@@ -113,6 +121,7 @@ public class VeloDbHelper extends SQLiteOpenHelper {
         mInput.close();
     }
 
+    // Get Velo Routes from DB
     public List<VeloRoute> getVeloRoutes() {
         List<VeloRoute> routesList = new ArrayList<>();
         String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s", TABLE_ROUTES);
@@ -123,6 +132,7 @@ public class VeloDbHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     VeloRoute route = new VeloRoute();
+                    route.setId(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ID)));
                     route.setRoute_name(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_NAME)));
                     route.setElevation(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ELEVATION)));
                     route.setRoute_distance(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_DISTANCE)));
@@ -132,12 +142,98 @@ public class VeloDbHelper extends SQLiteOpenHelper {
                 } while(cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.d("SQL", "Error while trying to get posts from database");
+            Log.d("SQL", "Error while trying to get routes from database");
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
         return routesList;
+    }
+
+    // Insert a route path into the DB user favorite table
+    public void addFavoriteRoute(VeloRoute route) {
+        // Create and/or open the database for writing
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.beginTransaction();
+        try {
+            String routeId= route.getId();
+            ContentValues values = new ContentValues();
+            values.put(KEY_ROUTES_ID, routeId);
+
+            // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
+            db.insertOrThrow(TABLE_FAVORITE_ROUTES, null, values);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.d(TAG, "Error while trying to add post to database");
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public boolean checkFavoriteRouteExists(String id) {
+        boolean exists = false;
+        String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s WHERE id=?", TABLE_FAVORITE_ROUTES);
+
+        db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(ROUTES_SELECT_QUERY, new String[] {id});
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Log.v("DB", cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ID)));
+                    exists = true;
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d("SQL", "Error while trying to get routes from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return exists;
+    }
+
+    public void getAllFavoriteRoutes() {
+        String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s", TABLE_FAVORITE_ROUTES);
+
+        db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(ROUTES_SELECT_QUERY, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Log.v("DB", cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ID)));
+                    //todo: join detail with table routes
+//                    VeloRoute route = new VeloRoute();
+//                    route.setId(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ID)));
+//                    route.setRoute_name(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_NAME)));
+//                    route.setElevation(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ELEVATION)));
+//                    route.setRoute_distance(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_DISTANCE)));
+//                    route.setSnapshot_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_SNAPSHOT_URL)));
+//                    route.setKml_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_KML_URL)));
+//                    routesList.add(route);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d("SQL", "Error while trying to get routes from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+    }
+
+    public void deleteFromFavorite(String id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.delete(TABLE_FAVORITE_ROUTES, "id=?", new String[] {id});
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.d(TAG, "Error while trying to delete all posts and users");
+        } finally {
+            db.endTransaction();
+        }
     }
 }

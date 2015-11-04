@@ -6,6 +6,8 @@ import java.io.Serializable;
  * Created by kentsay on 23/10/2015.
  */
 public class VeloRoute implements Serializable {
+
+    String id;
     String route_name;
     String route_distance;
     String route_height;
@@ -37,6 +39,10 @@ public class VeloRoute implements Serializable {
         this.kml_url = kml_url;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getRoute_name() {
         return route_name;
     }
@@ -59,5 +65,9 @@ public class VeloRoute implements Serializable {
 
     public String getKml_url() {
         return kml_url;
+    }
+
+    public String getId() {
+        return id;
     }
 }
