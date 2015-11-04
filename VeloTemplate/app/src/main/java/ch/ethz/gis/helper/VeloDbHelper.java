@@ -19,7 +19,7 @@ import ch.ethz.gis.velotemplate.VeloRoute;
 /**
  * Created by kentsay on 23/10/2015.
  */
-public class BikeNetDatabaseHelper extends SQLiteOpenHelper {
+public class VeloDbHelper extends SQLiteOpenHelper {
 
     //Log cat TAG setting
     private static String TAG = "DataBaseHelper";
@@ -39,19 +39,19 @@ public class BikeNetDatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_ROUTES_NAME         = "name";
     private static final String KEY_ROUTES_KML_URL      = "kml_url";
 
-    private static BikeNetDatabaseHelper sInstance;
+    private static VeloDbHelper sInstance;
     private final Context mContext;
     private SQLiteDatabase db;
 
-    public static synchronized BikeNetDatabaseHelper getInstance(Context context) {
+    public static synchronized VeloDbHelper getInstance(Context context) {
         //create singleton instance only
         if (sInstance == null) {
-            sInstance = new BikeNetDatabaseHelper(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
+            sInstance = new VeloDbHelper(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
         }
         return sInstance;
     }
 
-    public BikeNetDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public VeloDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
         //check SDK version to modify DB path
         if(android.os.Build.VERSION.SDK_INT >= 17) {

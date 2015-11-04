@@ -15,7 +15,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.gis.helper.BikeNetDatabaseHelper;
+import ch.ethz.gis.helper.VeloDbHelper;
 
 public class VeloHome extends ListActivity {
 
@@ -51,7 +51,7 @@ public class VeloHome extends ListActivity {
     public List<VeloRoute> getDataForListView()
     {
         List<VeloRoute> routeList = new ArrayList<VeloRoute>();
-        BikeNetDatabaseHelper dbHelper = BikeNetDatabaseHelper.getInstance(this);
+        VeloDbHelper dbHelper = VeloDbHelper.getInstance(this);
         routeList = dbHelper.getVeloRoutes();
         return routeList;
     }
