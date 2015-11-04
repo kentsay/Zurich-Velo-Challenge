@@ -17,9 +17,6 @@ import java.util.List;
 
 import ch.ethz.gis.velotemplate.VeloRoute;
 
-/**
- * Created by kentsay on 23/10/2015.
- */
 public class VeloDbHelper extends SQLiteOpenHelper {
 
     //Log cat TAG setting

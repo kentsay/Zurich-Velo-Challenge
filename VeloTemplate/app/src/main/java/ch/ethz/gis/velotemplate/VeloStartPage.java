@@ -7,9 +7,6 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
-/**
- * Created by kentsay on 23/10/2015.
- */
 public class VeloStartPage extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

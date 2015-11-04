@@ -2,9 +2,6 @@ package ch.ethz.gis.velotemplate;
 
 import java.io.Serializable;
 
-/**
- * Created by kentsay on 23/10/2015.
- */
 public class VeloRoute implements Serializable {
 
     String id;

@@ -9,9 +9,6 @@ import android.widget.TextView;
 
 import ch.ethz.gis.helper.VeloDbHelper;
 
-/**
- * Created by kentsay on 28/10/2015.
- */
 public class RouteInfoActivity extends Activity {
 
     private VeloDbHelper dbHelper = VeloDbHelper.getInstance(this);
