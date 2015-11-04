@@ -208,7 +208,9 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
                 // bounds are outside the boundingBox
                 String mess = "Outside of bounding box! \n Overlay is not loaded!";
                 Log.d("WMSLoader" , mess);
-                //Toast.makeText(getApplicationContext(),mess,Toast.LENGTH_SHORT).show();
+                publishProgress();
+                //publishProgress();
+                //Toast.makeText(ShowMap.this,mess,Toast.LENGTH_SHORT).show();
                 return null;
             }
 
@@ -237,6 +239,12 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
                 }
             }
 
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            String mess = "Outside of bounding box! \n Overlay is not loaded!";
+            Toast.makeText(ShowMap.this,mess,Toast.LENGTH_SHORT).show();
         }
     }
 
