@@ -17,7 +17,13 @@ class RouteCrawler(scrapy.Spider):
 	# Connect to SQLite database
 	self.conn = sqlite3.connect('routes.db')
 	self.c = self.conn.cursor()
-	self.c.execute('''CREATE TABLE if not exists routes (distance, snapshot_url, elevation, name, kml_url)''')
+	self.c.execute('''CREATE TABLE if not exists routes (
+                            id integer primary key AUTOINCREMENT not null,
+                            distance real, 
+                            snapshot_url text, 
+                            elevation real, 
+                            name text, 
+                            kml_url text)''')
 
 	# Standard Scrapy settings
 	self.allowed_domains = "http://www.bikemap.net"
@@ -58,7 +64,7 @@ class RouteCrawler(scrapy.Spider):
 	    #print item
 
 	    # Store the item into database
-	    self.c.execute('INSERT INTO routes VALUES (?,?,?,?,?)', item.values())
+	    self.c.execute('INSERT INTO routes (distance, snapshot_url, elevation, name, kml_url) VALUES (?,?,?,?,?)', item.values())
 	    self.conn.commit()
 
     def spider_closed(self, spider):
