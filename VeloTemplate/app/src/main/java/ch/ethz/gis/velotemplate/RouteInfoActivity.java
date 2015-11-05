@@ -26,7 +26,7 @@ public class RouteInfoActivity extends Activity {
 
         context = getApplicationContext();
         Intent i = getIntent();
-        
+
         route        = (VeloRoute)i.getSerializableExtra(VeloHome.ID_EXTRA);
         TextView name          = (TextView) findViewById(R.id.route_info_name);
         TextView distance      = (TextView) findViewById(R.id.route_info_distance);
