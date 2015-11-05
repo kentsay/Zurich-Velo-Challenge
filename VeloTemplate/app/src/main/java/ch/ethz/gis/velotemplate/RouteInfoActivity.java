@@ -1,11 +1,13 @@
 package ch.ethz.gis.velotemplate;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import ch.ethz.gis.helper.VeloDbHelper;
 
@@ -15,13 +17,16 @@ public class RouteInfoActivity extends Activity {
     private VeloRoute route;
     private MenuItem fav;
     private MenuItem unfav;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.velo_detail_info_page);
 
+        context = getApplicationContext();
         Intent i = getIntent();
+        
         route        = (VeloRoute)i.getSerializableExtra(VeloHome.ID_EXTRA);
         TextView name          = (TextView) findViewById(R.id.route_info_name);
         TextView distance      = (TextView) findViewById(R.id.route_info_distance);
@@ -64,12 +69,14 @@ public class RouteInfoActivity extends Activity {
                 //reset action bar icon to show fav or unfav
                 fav.setVisible(false);
                 unfav.setVisible(true);
+                Toast.makeText(context, "Added to My Favourite", Toast.LENGTH_SHORT).show();
                 dbHelper.addFavouriteRoute(route);
                 return true;
             case R.id.action_bar_favorite_remove:
                 //reset action bar icon to show fav or unfav
                 unfav.setVisible(false);
                 fav.setVisible(true);
+                Toast.makeText(context, "Removed from My Favourite", Toast.LENGTH_SHORT).show();
                 dbHelper.deleteFromFavourite(route.getId());
                 return true;
             default:
