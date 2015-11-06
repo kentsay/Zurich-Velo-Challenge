@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">VeloTemplate</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+    <string-array name="navigation_drawer_user_customize_item">
+        <item>My Favourite</item>
+        <item>Routes Nearby</item>
+        <item>History</item>
+        <item>Filter</item>
+    </string-array>
+</resources>
