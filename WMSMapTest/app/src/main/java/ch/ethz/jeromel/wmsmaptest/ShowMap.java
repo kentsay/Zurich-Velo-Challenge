@@ -1,5 +1,6 @@
 package ch.ethz.jeromel.wmsmaptest;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.os.Looper;
@@ -19,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -69,7 +71,8 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_map);
-
+        // set the orientation of the app to portrait...
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Display display = getWindowManager().getDefaultDisplay();
         // define the necessary size of the map and create the corresponding URL
         Point size = new Point();
@@ -105,7 +108,7 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap nMap) {
         mMap = nMap;
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(poslatlong, 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(poslatlong, 9));
         Projection  tempProjection = mMap.getProjection();
         setProjection(tempProjection);
         mMap.setOnCameraChangeListener(getCameraChangeListener());
@@ -155,6 +158,8 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
 
     public class loadBasemap extends AsyncTask<String, Void, Bitmap>{
 
+        // create mapBounds for each thread
+        private LatLngBounds mapBounds;
 
         @Override
         protected Bitmap doInBackground(String... urls) {
@@ -167,6 +172,7 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
             LatLng ll = projection.fromScreenLocation(new Point(0,dimensions[1])); //southwest
             // set the new mapBounds
             ShowMap.setMapBounds(new LatLngBounds(ll,ur)); // southwest, northwest
+            this.mapBounds = new LatLngBounds(ll,ur);
 
             // resolve the LatLngBounds to doubles
             double[] bounds = new double[4];
@@ -206,11 +212,6 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
                 return BitmapFactory.decodeStream(input);
             } else {
                 // bounds are outside the boundingBox
-                String mess = "Outside of bounding box! \n Overlay is not loaded!";
-                Log.d("WMSLoader" , mess);
-                publishProgress();
-                //publishProgress();
-                //Toast.makeText(ShowMap.this,mess,Toast.LENGTH_SHORT).show();
                 return null;
             }
 
@@ -222,12 +223,10 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
 
             if (bitmap != null) {
                 // bitmap is ready!
-                // get the current bounds of the view
-                LatLngBounds mapBounds = getBounds();
                 // create new overlay
                 GroundOverlay newOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        .positionFromBounds(mapBounds));
+                        .positionFromBounds(this.mapBounds));
                 allOverlays.push(newOverlay);
                 //  if the total number of overlays is bigger than 3, the last is removed
                 if (allOverlays.size()> 3) {
@@ -241,11 +240,6 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
 
         }
 
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            String mess = "Outside of bounding box! \n Overlay is not loaded!";
-            Toast.makeText(ShowMap.this,mess,Toast.LENGTH_SHORT).show();
-        }
     }
 
     public class loadKML extends AsyncTask<String, Void, KmlLayer> {
@@ -293,7 +287,7 @@ public class ShowMap extends AppCompatActivity implements OnMapReadyCallback {
             for (LatLng latLng : lineString.getGeometryObject()) {
                 builder.include(latLng);
             }
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 2));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 2));
 
             // add the layer to the map
             try {
