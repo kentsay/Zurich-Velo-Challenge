@@ -1,17 +1,19 @@
 package ch.ethz.gis.velotemplate;
 
-import android.content.Intent;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.ListFragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ public class VeloStartPage extends ActionBarActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
+    private String[] mNavigationDrawerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,7 @@ public class VeloStartPage extends ActionBarActivity {
         mDrawerList = (ListView)findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
+        mNavigationDrawerList= getResources().getStringArray(R.array.navigation_drawer_user_customize_item);
 
         addDrawerItems();
         setupDrawer();
@@ -38,37 +42,9 @@ public class VeloStartPage extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        // route category, a naive view to help user find their preferable route
-        Button easy = (Button)findViewById(R.id.button1);
-        Button medium = (Button)findViewById(R.id.button2);
-        Button hard = (Button)findViewById(R.id.button3);
-
-        easy.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                Intent simple = new Intent(VeloStartPage.this,VeloHome.class);
-                startActivity(simple);
-            }
-        });
-
-        medium.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent base = new Intent(VeloStartPage.this,VeloHome.class);
-                startActivity(base);
-            }
-        });
-
-        hard.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent base = new Intent(VeloStartPage.this,VeloHome.class);
-                startActivity(base);
-            }
-        });
+        // default start up page will be a route category, a naive view to help user find their preferable route
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new CategoryFragement()).commit();
     }
 
     @Override
@@ -112,22 +88,63 @@ public class VeloStartPage extends ActionBarActivity {
 
     // Navigation Drawer for user customize menu
     private void addDrawerItems() {
-        String[] osArray = { "My Favourite", "Routes Nearby", "History", "Filter" };
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mNavigationDrawerList);
         mDrawerList.setAdapter(mAdapter);
 
+        // create the item click listener to handle click event
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //TODO: implement different view for each item
-                Toast.makeText(VeloStartPage.this, "Function not done yet!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(VeloStartPage.this, "Function " + position + " not done yet!", Toast.LENGTH_SHORT).show();
+                selectItem(position);
             }
         });
     }
 
+    // Handle navigation drawer select item to open different fragment view
+    private void selectItem(int position) {
+        Fragment fragment = null;
+        ListFragment listFragment = null;
+
+        switch (position) {
+            case 0:
+                listFragment = new FavouriteFragment();
+                break;
+            case 1:
+                fragment = new FilterFragment();
+                break;
+            case 2:
+                fragment = new FilterFragment();
+                break;
+            case 3:
+                listFragment = new FavouriteFragment();
+                break;
+            default:
+                break;
+        }
+
+        if (fragment != null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+            mDrawerList.setItemChecked(position, true);
+            mDrawerList.setSelection(position);
+            //getActionBar().setTitle(mNavigationDrawerList[position]);
+            mDrawerLayout.closeDrawer(mDrawerList);
+        } else if (listFragment != null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, listFragment).commit();
+            mDrawerList.setItemChecked(position, true);
+            mDrawerList.setSelection(position);
+            //getActionBar().setTitle(mNavigationDrawerList[position]);
+            mDrawerLayout.closeDrawer(mDrawerList);
+        } else {
+            Log.e("MainActivity", "Error in creating fragment");
+        }
+    }
+
     private void setupDrawer() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -142,9 +159,7 @@ public class VeloStartPage extends ActionBarActivity {
                 invalidateOptionsMenu();
             }
         };
-
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
-
 }
