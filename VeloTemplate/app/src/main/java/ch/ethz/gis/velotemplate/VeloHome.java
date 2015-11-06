@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.gis.helper.VeloDbHelper;
+import ch.ethz.gis.maps.RoutePreview;
 
 public class VeloHome extends ListActivity {
 
@@ -36,7 +37,7 @@ public class VeloHome extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         VeloRoute route = veloAdapter.getVeloRoute(position);
         //Toast.makeText(VeloHome.this, route.route_name, Toast.LENGTH_SHORT).show();
-        Intent routeInfo = new Intent(VeloHome.this, RouteInfoActivity.class);
+        Intent routeInfo = new Intent(VeloHome.this, RoutePreview.class);
         routeInfo.putExtra(ID_EXTRA, route);
         startActivity(routeInfo);
     }
