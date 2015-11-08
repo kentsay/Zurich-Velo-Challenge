@@ -3,15 +3,32 @@ package ch.ethz.gis.velotemplate;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.Projection;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +40,6 @@ public class VeloHome extends ListActivity {
     public final static String ID_EXTRA = "ch.ethz.gis.VeloTemplate._ID";
     public VeloRouteAdapter veloAdapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +47,7 @@ public class VeloHome extends ListActivity {
 
         veloAdapter= new VeloRouteAdapter();
         setListAdapter(veloAdapter);
+
     }
 
     @Override
@@ -85,11 +102,14 @@ public class VeloHome extends ListActivity {
 
             TextView routeName = (TextView)convertView.findViewById(R.id.route_name);
             TextView routeDistance = (TextView)convertView.findViewById(R.id.route_info);
+            ImageView routeSnapshot = (ImageView)convertView.findViewById(R.id.route_map);
 
             VeloRoute route = routeList.get(position);
 
             routeName.setText(route.route_name);
             routeDistance.setText(route.route_distance + "km");
+            loadSnapshot loadSnapshotThread = new loadSnapshot(routeSnapshot);
+            loadSnapshotThread.execute(route.snapshot_url);
 
             return convertView;
         }
@@ -99,5 +119,29 @@ public class VeloHome extends ListActivity {
             return routeList.get(position);
         }
 
+        private class loadSnapshot extends AsyncTask<String, Void, Bitmap> {
+            ImageView bmImage;
+
+            public loadSnapshot(ImageView bmImage) {
+                this.bmImage = bmImage;
+            }
+
+            protected Bitmap doInBackground(String... urls) {
+                String url = urls[0];
+                Bitmap bitmap = null;
+                try {
+                    InputStream in = new URL(url).openStream();
+                    bitmap = BitmapFactory.decodeStream(in);
+                } catch (Exception e) {
+                    Log.e("loadSnapshot", e.getMessage());
+                    e.printStackTrace();
+                }
+                return bitmap;
+            }
+
+            protected void onPostExecute(Bitmap result) {
+                bmImage.setImageBitmap(result);
+            }
+        }
     }
 }
