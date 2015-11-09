@@ -9,7 +9,7 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -42,11 +42,11 @@ import java.util.LinkedList;
 
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.velotemplate.R;
-import ch.ethz.gis.velotemplate.VeloHome;
+import ch.ethz.gis.velotemplate.VeloRouteListFragment;
 import ch.ethz.gis.velotemplate.VeloRoute;
 
 
-public class RoutePreview extends ActionBarActivity implements OnMapReadyCallback {
+public class RoutePreviewFragment extends AppCompatActivity implements OnMapReadyCallback {
 
     public GoogleMap mMap;
     public LinkedList<GroundOverlay> allOverlays = new LinkedList<>();
@@ -79,7 +79,7 @@ public class RoutePreview extends ActionBarActivity implements OnMapReadyCallbac
         Intent i = getIntent();
 
         // read the route data from previous activity
-        route        = (VeloRoute)i.getSerializableExtra(VeloHome.ID_EXTRA);
+        route        = (VeloRoute)i.getSerializableExtra(VeloRouteListFragment.ID_EXTRA);
         kmlUrl = route.getKml_url();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -182,7 +182,7 @@ public class RoutePreview extends ActionBarActivity implements OnMapReadyCallbac
             LatLng ur = projection.fromScreenLocation(new Point(dimensions[0],0)); //northeast
             LatLng ll = projection.fromScreenLocation(new Point(0,dimensions[1])); //southwest
             // set the new mapBounds
-            RoutePreview.setMapBounds(new LatLngBounds(ll,ur)); // southwest, northwest
+            RoutePreviewFragment.setMapBounds(new LatLngBounds(ll, ur)); // southwest, northwest
             this.mapBounds = new LatLngBounds(ll,ur);
             // resolve the LatLngBounds to doubles
             double[] bounds = new double[4];
