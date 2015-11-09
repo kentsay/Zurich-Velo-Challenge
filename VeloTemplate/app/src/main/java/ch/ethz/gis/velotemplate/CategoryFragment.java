@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 
-public class CategoryFragement extends Fragment implements View.OnClickListener{
+public class CategoryFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.category_view, container, false);
@@ -29,15 +29,15 @@ public class CategoryFragement extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button1:
-                Intent simple = new Intent(getActivity(), VeloHome.class);
+                Intent simple = new Intent(getActivity(), VeloRouteListFragment.class);
                 startActivity(simple);
                 break;
             case R.id.button2:
-                Intent medium = new Intent(getActivity(),VeloHome.class);
+                Intent medium = new Intent(getActivity(),VeloRouteListFragment.class);
                 startActivity(medium);
                 break;
             case R.id.button3:
-                Intent hard = new Intent(getActivity(),VeloHome.class);
+                Intent hard = new Intent(getActivity(),VeloRouteListFragment.class);
                 startActivity(hard);
                 break;
             default:

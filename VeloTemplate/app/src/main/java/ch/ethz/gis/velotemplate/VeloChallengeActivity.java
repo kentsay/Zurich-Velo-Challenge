@@ -6,8 +6,8 @@ import android.app.ListFragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class VeloStartPage extends ActionBarActivity {
+public class VeloChallengeActivity extends AppCompatActivity {
 
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
@@ -44,7 +44,7 @@ public class VeloStartPage extends ActionBarActivity {
 
         // default start up page will be a route category, a naive view to help user find their preferable route
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, new CategoryFragement()).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new CategoryFragment()).commit();
     }
 
     @Override
@@ -96,7 +96,7 @@ public class VeloStartPage extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //TODO: implement different view for each item
-                Toast.makeText(VeloStartPage.this, "Function " + position + " not done yet!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(VeloChallengeActivity.this, "Function " + position + " not done yet!", Toast.LENGTH_SHORT).show();
                 selectItem(position);
             }
         });
@@ -109,15 +109,18 @@ public class VeloStartPage extends ActionBarActivity {
 
         switch (position) {
             case 0:
-                listFragment = new FavouriteFragment();
+                fragment = new CategoryFragment();
                 break;
             case 1:
-                fragment = new FilterFragment();
+                listFragment = new FavouriteFragment();
                 break;
             case 2:
                 fragment = new FilterFragment();
                 break;
             case 3:
+                fragment = new FilterFragment();
+                break;
+            case 4:
                 listFragment = new FavouriteFragment();
                 break;
             default:
