@@ -1,6 +1,7 @@
 package ch.ethz.gis.velotemplate;
 
 import android.app.Fragment;
+import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,16 +30,17 @@ public class CategoryFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button1:
-                Intent simple = new Intent(getActivity(), VeloRouteListFragment.class);
-                startActivity(simple);
+                ListFragment routeList = new VeloRouteListFragment();
+                this.getFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, routeList)
+                        .addToBackStack(null)
+                        .commit();
                 break;
             case R.id.button2:
-                Intent medium = new Intent(getActivity(),VeloRouteListFragment.class);
-                startActivity(medium);
+                //TODO
                 break;
             case R.id.button3:
-                Intent hard = new Intent(getActivity(),VeloRouteListFragment.class);
-                startActivity(hard);
+                //TODO
                 break;
             default:
                 break;
