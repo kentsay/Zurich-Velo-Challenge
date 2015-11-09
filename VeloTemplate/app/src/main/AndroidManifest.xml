@@ -19,9 +19,10 @@
         android:icon="@drawable/logo_96"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        >
         <activity
-            android:name="ch.ethz.gis.velotemplate.VeloStartPage"
+            android:name=".VeloChallengeActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat">
             <intent-filter>
@@ -29,21 +30,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="ch.ethz.gis.velotemplate.VeloHome"/>
         <activity android:name=".RouteInfoActivity" />
         <activity
-            android:name="ch.ethz.gis.maps.RoutePreview"
-            android:label="ShowMap"
-            android:parentActivityName="ch.ethz.gis.velotemplate.VeloHome"
+            android:name="ch.ethz.gis.maps.RoutePreviewFragment"
+            android:label="Map"
             android:theme="@style/Theme.AppCompat">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.ethz.gis.velotemplate.VeloHome" />
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="<INSERT YOUR OWN KEY>"/>
+            android:value="<INSERT KEY>"/>
 
     </application>
 </manifest>
