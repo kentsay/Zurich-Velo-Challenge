@@ -2,8 +2,6 @@ package ch.ethz.gis.helper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +10,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.InputStream;
-import java.net.URL;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
 import java.util.List;
 
 import ch.ethz.gis.velotemplate.R;
@@ -64,8 +64,7 @@ public class VeloRouteAdapter extends BaseAdapter {
         // Display elevation only when the value is valid
         if(!route.getElevation().equals("-1"))
             routeInfo.append("⇡︎ " + route.getElevation() + " m");
-        loadSnapshot loadSnapshotThread = new loadSnapshot(routeSnapshot);
-        loadSnapshotThread.execute(route.getSnapshot_url());
+        showSnapshot(route.getSnapshot_url(), routeSnapshot);
 
         return convertView;
     }
@@ -74,28 +73,22 @@ public class VeloRouteAdapter extends BaseAdapter {
     {
         return routeList.get(position);
     }
-    private class loadSnapshot extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
 
-        public loadSnapshot(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String url = urls[0];
-            Bitmap bitmap = null;
-            try {
-                InputStream in = new URL(url).openStream();
-                bitmap = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("loadSnapshot", e.getMessage());
-                e.printStackTrace();
-            }
-            return bitmap;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
+    private void showSnapshot(String url, final ImageView view){
+        // Retrieves snapshots via Volley
+        ImageRequest request = new ImageRequest(url,
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap bitmap) {
+                        view.setImageBitmap(bitmap);
+                    }
+                }, 0, 0, null,
+                new Response.ErrorListener() {
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Volley", error.getMessage());
+                        view.setImageResource(R.drawable.logo_64);
+                    }
+                });
+        VolleyHelper.getInstance(this.context).addToRequestQueue(request);
     }
 }

@@ -17,6 +17,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import ch.ethz.gis.helper.VolleyHelper;
+
 public class VeloChallengeActivity extends AppCompatActivity {
 
     private ListView mDrawerList;
@@ -45,6 +47,9 @@ public class VeloChallengeActivity extends AppCompatActivity {
         // default start up page will be a route category, a naive view to help user find their preferable route
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, new CategoryFragment()).commit();
+
+        // Create VolleyHelper singleton
+        VolleyHelper.getInstance(this.getApplicationContext());
     }
 
     @Override
