@@ -1,17 +1,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">>
 
     <item
         android:id="@+id/action_bar_favorite_add"
         android:icon="@drawable/ic_action_favorite"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="unFavorite">
     </item>
 
     <item
         android:id="@+id/action_bar_favorite_remove"
         android:icon="@drawable/ic_action_favorite_check"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="Favorite">
     </item>
 
