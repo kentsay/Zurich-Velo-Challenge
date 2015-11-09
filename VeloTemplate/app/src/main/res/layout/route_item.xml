@@ -1,32 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:weightSum="1"
+    android:background="#dcdcdc">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:elevation="3dp" >
 
-    <ImageView
-        android:id="@+id/route_map"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:scaleType="fitXY" />
+        <ImageView
+            android:id="@+id/route_map"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="fitXY"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
 
-    <TextView
-        android:id="@+id/route_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="23dp"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/route_map"
-        android:text="Route Name"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/route_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/route_map"
+            android:text="Route Name"
+            android:textSize="16sp"
+            android:textColor="#0d2845"
+            android:layout_toLeftOf="@+id/route_info"
+            android:layout_marginLeft="5dp"
+            android:typeface="normal"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/route_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/route_map"
-        android:layout_alignLeft="@+id/route_name"
-        android:text="Route Information" />
+        <TextView
+            android:id="@+id/route_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Route Information"
+            android:layout_alignTop="@+id/route_name"
+            android:layout_alignParentRight="true"
+            android:textSize="14sp"
+            android:layout_marginRight="10dp"
+            android:textColor="#a0a0a0"
+            android:textAlignment="textEnd"
+            android:typeface="monospace" />
 
-</RelativeLayout>
+    </RelativeLayout>
+</FrameLayout>
