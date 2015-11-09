@@ -53,13 +53,17 @@ public class VeloRouteAdapter extends BaseAdapter {
         }
 
         TextView routeName = (TextView)convertView.findViewById(R.id.route_name);
-        TextView routeDistance = (TextView)convertView.findViewById(R.id.route_info);
+        TextView routeInfo = (TextView)convertView.findViewById(R.id.route_info);
         ImageView routeSnapshot = (ImageView)convertView.findViewById(R.id.route_map);
 
         VeloRoute route = routeList.get(position);
 
         routeName.setText(route.getRoute_name());
-        routeDistance.setText(route.getRoute_distance() + "km");
+        // TODO: Replace the special symbols with other icons
+        routeInfo.setText("⇔︎ " + route.getRoute_distance() + " km\n");
+        // Display elevation only when the value is valid
+        if(!route.getElevation().equals("-1"))
+            routeInfo.append("⇡︎ " + route.getElevation() + " m");
         loadSnapshot loadSnapshotThread = new loadSnapshot(routeSnapshot);
         loadSnapshotThread.execute(route.getSnapshot_url());
 
