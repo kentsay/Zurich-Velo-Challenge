@@ -1,4 +1,4 @@
-package ch.ethz.gis.velotemplate;
+package ch.ethz.gis;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -15,9 +15,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import ch.ethz.gis.helper.VolleyHelper;
+import ch.ethz.gis.velotemplate.CategoryFragment;
+import ch.ethz.gis.velotemplate.FavouriteFragment;
+import ch.ethz.gis.velotemplate.FilterFragment;
+import ch.ethz.gis.velotemplate.R;
 
 public class VeloChallengeActivity extends AppCompatActivity {
 
