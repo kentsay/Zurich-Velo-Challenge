@@ -1,6 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="vertical"
+        android:visibility="visible" >
 
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Route distance: 0 - 500+ km"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+        <SeekBar
+            android:id="@+id/distance"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:progress="20"
+            android:secondaryProgress="20" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Altitude diff: 0 - 3000+ hm"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+        <SeekBar
+            android:id="@+id/altitude"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:progress="20"
+            android:secondaryProgress="20" />
+
+        <Button
+            style="@style/NiceButton"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:drawableStart="@drawable/velo_icon"
+            android:text="---->---- Find ---->----"
+            android:drawableEnd="@drawable/velo_icon"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+</RelativeLayout>

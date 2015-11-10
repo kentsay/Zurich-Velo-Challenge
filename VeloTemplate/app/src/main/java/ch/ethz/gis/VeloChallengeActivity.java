@@ -56,6 +56,16 @@ public class VeloChallengeActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+    }
+
+        @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_general, menu);
@@ -116,19 +126,20 @@ public class VeloChallengeActivity extends AppCompatActivity {
 
         switch (position) {
             case 0:
+                // Home
                 fragment = new CategoryFragment();
                 break;
             case 1:
+                // Favourite route
                 listFragment = new FavouriteFragment();
                 break;
             case 2:
+                // Routes nearby
                 fragment = new FilterFragment();
                 break;
             case 3:
+                // Filter view
                 fragment = new FilterFragment();
-                break;
-            case 4:
-                listFragment = new FavouriteFragment();
                 break;
             default:
                 break;
@@ -139,14 +150,12 @@ public class VeloChallengeActivity extends AppCompatActivity {
             fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
-            //getActionBar().setTitle(mNavigationDrawerList[position]);
             mDrawerLayout.closeDrawer(mDrawerList);
         } else if (listFragment != null) {
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_frame, listFragment).commit();
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
-            //getActionBar().setTitle(mNavigationDrawerList[position]);
             mDrawerLayout.closeDrawer(mDrawerList);
         } else {
             Log.e("MainActivity", "Error in creating fragment");
@@ -155,14 +164,14 @@ public class VeloChallengeActivity extends AppCompatActivity {
 
     private void setupDrawer() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-            /** Called when a drawer has settled in a completely open state. */
+            // Called when a drawer has settled in a completely open state
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 getSupportActionBar().setTitle("Smart Views");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
-            /** Called when a drawer has settled in a completely closed state. */
+            // Called when a drawer has settled in a completely closed state
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 getSupportActionBar().setTitle(mActivityTitle);
