@@ -101,7 +101,6 @@ public class VeloChallengeActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //TODO: implement different view for each item
-                Toast.makeText(VeloChallengeActivity.this, "Function " + position + " not done yet!", Toast.LENGTH_SHORT).show();
                 selectItem(position);
             }
         });

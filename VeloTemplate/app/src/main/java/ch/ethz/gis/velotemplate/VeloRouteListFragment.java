@@ -15,9 +15,8 @@ import ch.ethz.gis.maps.RoutePreviewFragment;
 
 public class VeloRouteListFragment extends ListFragment {
 
-    public final static String ID_EXTRA = "ch.ethz.gis.VeloTemplate._ID";
+    public final static String ID_EXTRA = "ROUTE";
     public VeloRouteAdapter veloAdapter;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,13 +32,6 @@ public class VeloRouteListFragment extends ListFragment {
         routeInfo.putExtra(ID_EXTRA, route);
         startActivity(routeInfo);
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_general, menu);
-//        return true;
-//    }
 
     public List<VeloRoute> getDataForListView()
     {

@@ -1,28 +1,56 @@
 package ch.ethz.gis.velotemplate;
 
 import android.app.ListFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-/**
- * Created by kentsay on 06/11/2015.
- */
+import java.util.ArrayList;
+import java.util.List;
+
+import ch.ethz.gis.helper.VeloDbHelper;
+import ch.ethz.gis.helper.VeloRouteAdapter;
+import ch.ethz.gis.maps.RoutePreviewFragment;
+
 public class FavouriteFragment extends ListFragment {
+
+    public final static String ID_EXTRA = "ROUTE";
+    public VeloRouteAdapter veloAdapter;
+
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-                "Linux", "OS/2" };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, values);
-        setListAdapter(adapter);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRouteListAdapter();
+    }
+
+    // retrieval favourite route when resume
+    @Override
+    public void onResume() {
+        super.onResume();
+        setRouteListAdapter();
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        // TODO implement some logic
+        VeloRoute route = veloAdapter.getVeloRoute(position);
+        Intent routeInfo = new Intent(getActivity(), RoutePreviewFragment.class);
+        routeInfo.putExtra(ID_EXTRA, route);
+        startActivity(routeInfo);
     }
+
+    private List<VeloRoute> getDataForFavouriteList()
+    {
+        List<VeloRoute> routeList = new ArrayList<VeloRoute>();
+        VeloDbHelper dbHelper = VeloDbHelper.getInstance(getActivity());
+        routeList = dbHelper.getAllFavoruiteRoutes();
+        return routeList;
+    }
+
+    // get favourite route and set list adapter
+    private void setRouteListAdapter() {
+        veloAdapter= new VeloRouteAdapter(getActivity(), getDataForFavouriteList());
+        setListAdapter(veloAdapter);
+    }
+
 }

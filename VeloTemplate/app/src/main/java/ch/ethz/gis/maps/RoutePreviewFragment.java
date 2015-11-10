@@ -48,6 +48,9 @@ import ch.ethz.gis.velotemplate.VeloRoute;
 
 public class RoutePreviewFragment extends AppCompatActivity implements OnMapReadyCallback {
 
+    //handling different intent
+    public final static String ID_EXTRA = "ROUTE";
+
     public GoogleMap mMap;
     public LinkedList<GroundOverlay> allOverlays = new LinkedList<>();
     private static Projection projection;
@@ -79,7 +82,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         Intent i = getIntent();
 
         // read the route data from previous activity
-        route        = (VeloRoute)i.getSerializableExtra(VeloRouteListFragment.ID_EXTRA);
+        route        = (VeloRoute)i.getSerializableExtra(ID_EXTRA);
         kmlUrl = route.getKml_url();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
