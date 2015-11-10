@@ -20,6 +20,7 @@ import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.velotemplate.CategoryFragment;
 import ch.ethz.gis.velotemplate.FavouriteFragment;
 import ch.ethz.gis.velotemplate.FilterFragment;
+import ch.ethz.gis.velotemplate.NearbyFragment;
 import ch.ethz.gis.velotemplate.R;
 
 public class VeloChallengeActivity extends AppCompatActivity {
@@ -134,8 +135,8 @@ public class VeloChallengeActivity extends AppCompatActivity {
                 listFragment = new FavouriteFragment();
                 break;
             case 2:
-                // Routes nearby
-                fragment = new FilterFragment();
+                // Nearby rental station
+                fragment = new NearbyFragment();
                 break;
             case 3:
                 // Filter view

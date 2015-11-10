@@ -6,7 +6,8 @@
     <string-array name="navigation_drawer_user_customize_item">
         <item>Home</item>
         <item>My Favourite</item>
-        <item>Routes Nearby</item>
+        <item>Nearby Rental</item>
         <item>Filter</item>
     </string-array>
+
 </resources>
