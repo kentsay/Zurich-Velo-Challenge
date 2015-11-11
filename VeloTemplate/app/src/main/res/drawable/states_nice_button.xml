@@ -10,5 +10,5 @@
         android:drawable="@drawable/nice_button_pressed" />
     <item
         android:state_enabled="true"
-        android:drawable="@drawable/nice_button_pressed" />
+        android:drawable="@drawable/nice_button_enabled" />
 </selector>

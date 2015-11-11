@@ -11,10 +11,10 @@
         android:visibility="visible" >
 
         <TextView
+            android:id="@+id/text_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="Route distance: 0 - 500+ km"
             android:textColor="#ffffff"
             android:textSize="20sp" />
 
@@ -24,13 +24,13 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:progress="20"
-            android:secondaryProgress="20" />
+            android:max="500" />
 
         <TextView
+            android:id="@+id/text_altitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="Altitude diff: 0 - 3000+ hm"
             android:textColor="#ffffff"
             android:textSize="20sp" />
 
@@ -40,14 +40,15 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:progress="20"
-            android:secondaryProgress="20" />
+            android:max="300" />
 
         <Button
             style="@style/NiceButton"
+            android:id="@+id/find"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:drawableStart="@drawable/velo_icon"
-            android:text="---->---- Find ---->----"
+            android:text="---- > ----    Find    ---- > ----"
             android:drawableEnd="@drawable/velo_icon"
             android:layout_gravity="center_horizontal" />
 

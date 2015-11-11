@@ -1,51 +1,87 @@
 package ch.ethz.gis.velotemplate;
 
 import android.app.Fragment;
+import android.app.ListFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
-import android.widget.Toast;
+import android.widget.TextView;
 
-/**
- * Created by kentsay on 06/11/2015.
- */
 public class FilterFragment extends Fragment {
 
+    private TextView distance;
+    private TextView altitude;
     private SeekBar distanceFilter;
     private SeekBar altitudeFilter;
+    private Button findButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.filter_view, container, false);
+        initialize(rootView);
 
-        distanceFilter = (SeekBar) getActivity().findViewById(R.id.distance);
-        altitudeFilter = (SeekBar) getActivity().findViewById(R.id.altitude);
+        distance.setText("Route distance: " + distanceFilter.getProgress() + " km");
+        distanceFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int distance_settings = 0;
 
-//        volumeControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            int progressChanged = 0;
-//
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-//                progressChanged = progress;
-//            }
-//
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//                // TODO Auto-generated method stub
-//            }
-//
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                Toast.makeText(getActivity(), "seek bar progress:" + progressChanged,
-//                        Toast.LENGTH_SHORT).show();
-//            }
-//        });
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                distance_settings = progress;
+                distance.setText("Route distance: " + distance_settings + " km");
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                distance.setText("Route distance: " + distance_settings + " km");
+            }
+        });
+
+        altitude.setText("Altitude diff: " + altitudeFilter.getProgress() + " hm");
+        altitudeFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int altitude_settings = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                altitude_settings = progress;
+                altitude.setText("Altitude diff: " + altitude_settings + " hm");
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                altitude.setText("Altitude diff: " + altitude_settings + " hm");
+            }
+        });
+
+        findButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: pass the distance and altitude into the listFragment
+                ListFragment routeList = new VeloRouteListFragment();
+                getActivity().getFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, routeList)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
         return rootView;
     }
 
-    private void filterAction() {
-        Log.v("filter", "trigger button aciton");
+    //initialize elements in this fragment
+    private void initialize(View view) {
+        distance = (TextView) view.findViewById(R.id.text_distance);
+        altitude = (TextView) view.findViewById(R.id.text_altitude);
+        distanceFilter = (SeekBar) view.findViewById(R.id.distance);
+        altitudeFilter = (SeekBar) view.findViewById(R.id.altitude);
+        findButton = (Button) view.findViewById(R.id.find);
     }
+
 }
