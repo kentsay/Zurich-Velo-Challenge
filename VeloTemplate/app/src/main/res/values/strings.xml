@@ -3,11 +3,6 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
-    <string-array name="navigation_drawer_user_customize_item">
-        <item>Home</item>
-        <item>My Favourite</item>
-        <item>Nearby Rental</item>
-        <item>Filter</item>
-    </string-array>
-
+    <string name="search_label">Search</string>
+    <string name="search_hint">Names of routes</string>
 </resources>

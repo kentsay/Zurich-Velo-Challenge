@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/home"
+            android:checked="false"
+            android:icon="@drawable/ic_home_black"
+            android:title="Home" />
+
+        <item
+            android:id="@+id/favourite"
+            android:checked="false"
+            android:icon="@drawable/ic_star_black"
+            android:title="Favourite" />
+
+        <item
+            android:id="@+id/rental"
+            android:checked="false"
+            android:icon="@drawable/ic_nearby"
+            android:title="Nearby Rental" />
+
+        <item
+            android:id="@+id/filter"
+            android:checked="false"
+            android:icon="@drawable/ic_action_search"
+            android:title="Filters" />
+
+        <item
+            android:id="@+id/about"
+            android:checked="false"
+            android:icon="@drawable/ic_about_team"
+            android:title="About Us" />
+    </group>
+</menu>

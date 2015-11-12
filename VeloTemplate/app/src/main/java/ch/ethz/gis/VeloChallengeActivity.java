@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.ListFragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,9 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.velotemplate.CategoryFragment;
@@ -25,31 +23,26 @@ import ch.ethz.gis.velotemplate.R;
 
 public class VeloChallengeActivity extends AppCompatActivity {
 
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
-    private String mActivityTitle;
-    private String[] mNavigationDrawerList;
+    private NavigationView navigationView;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.velo_start_page);
 
-        mDrawerList = (ListView)findViewById(R.id.navList);
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        mActivityTitle = getTitle().toString();
-        mNavigationDrawerList= getResources().getStringArray(R.array.navigation_drawer_user_customize_item);
+        navigationView = (NavigationView) findViewById(R.id.navList);
 
-        addDrawerItems();
-        setupDrawer();
+        this.setNavigationView();
+        this.setupDrawer();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         // default start up page will be a route category, a naive view to help user find their preferable route
-        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, new CategoryFragment()).commit();
 
         // Create VolleyHelper singleton
@@ -77,13 +70,13 @@ public class VeloChallengeActivity extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        actionBarDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -96,90 +89,80 @@ public class VeloChallengeActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         // Activate the navigation drawer toggle
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    // Navigation Drawer for user customize menu
-    private void addDrawerItems() {
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mNavigationDrawerList);
-        mDrawerList.setAdapter(mAdapter);
-
-        // create the item click listener to handle click event
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    private void setNavigationView() {
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //TODO: implement different view for each item
-                selectItem(position);
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                Fragment fragment = null;
+                ListFragment listFragment = null;
+
+                //Checking if the item is in checked state or not, if not make it in checked state
+                if (menuItem.isChecked()) menuItem.setChecked(false);
+                else menuItem.setChecked(true);
+
+                //Closing drawer on item click
+                drawerLayout.closeDrawers();
+
+                switch (menuItem.getItemId()) {
+                    case R.id.home:
+                        fragment = new CategoryFragment();
+                        break;
+                    case R.id.favourite:
+                        listFragment = new FavouriteFragment();
+                        break;
+                    case R.id.rental:
+                        fragment = new NearbyFragment();
+                        break;
+                    case R.id.filter:
+                        fragment = new FilterFragment();
+                        break;
+                    case R.id.about:
+                        //TODO
+                        break;
+                }
+                if (fragment != null) {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                } else if (listFragment != null) {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, listFragment).commit();
+                } else {
+                    Log.e("VeloChallengeActivity", "Error in creating fragment");
+                }
+                return true;
             }
         });
     }
 
-    // Handle navigation drawer select item to open different fragment view
-    private void selectItem(int position) {
-        Fragment fragment = null;
-        ListFragment listFragment = null;
-
-        switch (position) {
-            case 0:
-                // Home
-                fragment = new CategoryFragment();
-                break;
-            case 1:
-                // Favourite route
-                listFragment = new FavouriteFragment();
-                break;
-            case 2:
-                // Nearby rental station
-                fragment = new NearbyFragment();
-                break;
-            case 3:
-                // Filter view
-                fragment = new FilterFragment();
-                break;
-            default:
-                break;
-        }
-
-        if (fragment != null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-            mDrawerList.setItemChecked(position, true);
-            mDrawerList.setSelection(position);
-            mDrawerLayout.closeDrawer(mDrawerList);
-        } else if (listFragment != null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, listFragment).commit();
-            mDrawerList.setItemChecked(position, true);
-            mDrawerList.setSelection(position);
-            mDrawerLayout.closeDrawer(mDrawerList);
-        } else {
-            Log.e("MainActivity", "Error in creating fragment");
-        }
-    }
-
     private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-            // Called when a drawer has settled in a completely open state
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Smart Views");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+        // Initializing Drawer Layout and ActionBarToggle
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout,R.string.drawer_open, R.string.drawer_close){
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
+                super.onDrawerClosed(drawerView);
             }
 
-            // Called when a drawer has settled in a completely closed state
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
-                invalidateOptionsMenu();
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
+
+                super.onDrawerOpened(drawerView);
             }
         };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
     }
 }

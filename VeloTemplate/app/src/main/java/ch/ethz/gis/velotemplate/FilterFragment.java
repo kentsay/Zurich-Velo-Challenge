@@ -68,7 +68,6 @@ public class FilterFragment extends Fragment {
         findButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: pass the distance and altitude into the listFragment
                 ListFragment routeList = new VeloRouteListFragment();
                 routeList.setArguments(args);
                 getActivity().getFragmentManager().beginTransaction()
