@@ -15,4 +15,11 @@
         android:title="Favorite">
     </item>
 
+    <item
+        android:id="@+id/navigation"
+        android:icon="@drawable/ic_action_navigation"
+        app:showAsAction="always"
+        android:title="Navigation">
+        ></item>
+
 </menu>
