@@ -17,6 +17,7 @@ public class FilterFragment extends Fragment {
     private SeekBar distanceFilter;
     private SeekBar altitudeFilter;
     private Button findButton;
+    private Bundle args;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,6 +39,8 @@ public class FilterFragment extends Fragment {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
+                // set arguments for ListFragment to call DbHelper and change text
+                args.putInt("distance", distance_settings);
                 distance.setText("Route distance: " + distance_settings + " km");
             }
         });
@@ -47,6 +50,7 @@ public class FilterFragment extends Fragment {
             int altitude_settings = 0;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // set arguments for ListFragment to call DbHelper and change text
                 altitude_settings = progress;
                 altitude.setText("Altitude diff: " + altitude_settings + " hm");
             }
@@ -56,6 +60,7 @@ public class FilterFragment extends Fragment {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
+                args.putInt("altitude", altitude_settings);
                 altitude.setText("Altitude diff: " + altitude_settings + " hm");
             }
         });
@@ -65,6 +70,7 @@ public class FilterFragment extends Fragment {
             public void onClick(View v) {
                 //TODO: pass the distance and altitude into the listFragment
                 ListFragment routeList = new VeloRouteListFragment();
+                routeList.setArguments(args);
                 getActivity().getFragmentManager().beginTransaction()
                         .replace(R.id.content_frame, routeList)
                         .addToBackStack(null)
@@ -77,10 +83,13 @@ public class FilterFragment extends Fragment {
 
     //initialize elements in this fragment
     private void initialize(View view) {
+        args = new Bundle();
         distance = (TextView) view.findViewById(R.id.text_distance);
         altitude = (TextView) view.findViewById(R.id.text_altitude);
         distanceFilter = (SeekBar) view.findViewById(R.id.distance);
         altitudeFilter = (SeekBar) view.findViewById(R.id.altitude);
+        args.putInt("distance", distanceFilter.getProgress());
+        args.putInt("altitude", altitudeFilter.getProgress());
         findButton = (Button) view.findViewById(R.id.find);
     }
 

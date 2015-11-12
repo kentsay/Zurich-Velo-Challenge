@@ -148,6 +148,37 @@ public class VeloDbHelper extends SQLiteOpenHelper {
         return routesList;
     }
 
+    // Get Velo Routes from DB
+    public List<VeloRoute> getVeloRoutesByArgument(int distance, int altitude) {
+        List<VeloRoute> routesList = new ArrayList<>();
+        String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s WHERE distance < %d and elevation < %d", TABLE_ROUTES, distance, altitude);
+
+        db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(ROUTES_SELECT_QUERY, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    VeloRoute route = new VeloRoute();
+                    route.setId(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ID)));
+                    route.setRoute_name(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_NAME)));
+                    route.setElevation(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ELEVATION)));
+                    route.setRoute_distance(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_DISTANCE)));
+                    route.setSnapshot_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_SNAPSHOT_URL)));
+                    route.setKml_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_KML_URL)));
+                    routesList.add(route);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d("SQL", "Error while trying to get routes from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return routesList;
+    }
+
+
     // Insert a route path into the DB user favourite table
     public void addFavouriteRoute(VeloRoute route) {
         // Create and/or open the database for writing
@@ -194,7 +225,7 @@ public class VeloDbHelper extends SQLiteOpenHelper {
     }
 
     // Get user favourite routes from db
-    public List<VeloRoute> getAllFavoruiteRoutes() {
+    public List<VeloRoute> getAllFavouriteRoutes() {
         List<VeloRoute> routesList = new ArrayList<>();
         String ROUTES_SELECT_QUERY = String.format(
                 "SELECT fav.id, r.name, r.distance, r.snapshot_url, r.elevation, r.kml_url " +

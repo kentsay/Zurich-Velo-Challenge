@@ -16,12 +16,22 @@ import ch.ethz.gis.maps.RoutePreviewFragment;
 public class VeloRouteListFragment extends ListFragment {
 
     public final static String ID_EXTRA = "ROUTE";
-    public VeloRouteAdapter veloAdapter;
+    private List<VeloRoute> routeList;
+    private VeloDbHelper dbHelper;
+    private VeloRouteAdapter veloAdapter;
+    private Bundle args;
+    private int distance;
+    private int altitude;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        veloAdapter= new VeloRouteAdapter(getActivity(), getDataForListView());
+        this.initialize();
+        // if args is not null means calling the fragment from filter, else it's from default
+        if (args != null)
+            veloAdapter= new VeloRouteAdapter(getActivity(), getVeloRoutes(distance, altitude));
+        else
+            veloAdapter= new VeloRouteAdapter(getActivity(), getAllVeloRoutes());
         setListAdapter(veloAdapter);
     }
 
@@ -33,12 +43,29 @@ public class VeloRouteListFragment extends ListFragment {
         startActivity(routeInfo);
     }
 
-    public List<VeloRoute> getDataForListView()
+    private List<VeloRoute> getAllVeloRoutes()
     {
-        List<VeloRoute> routeList = new ArrayList<VeloRoute>();
-        VeloDbHelper dbHelper = VeloDbHelper.getInstance(getActivity());
+        routeList = new ArrayList<VeloRoute>();
         routeList = dbHelper.getVeloRoutes();
         return routeList;
+    }
+
+    private List<VeloRoute> getVeloRoutes(int distance, int altitude)
+    {
+        routeList = new ArrayList<VeloRoute>();
+        routeList = dbHelper.getVeloRoutesByArgument(distance, altitude);
+        return routeList;
+    }
+
+    private void initialize() {
+        args = this.getArguments();
+        if (args != null) {
+            if (args.containsKey("distance"))
+                distance = args.getInt("distance", 1000);
+            if (args.containsKey("altitude"))
+                altitude = args.getInt("altitude", 1000);
+        }
+        dbHelper = VeloDbHelper.getInstance(getActivity());
     }
 
 }

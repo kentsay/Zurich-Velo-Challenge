@@ -43,7 +43,7 @@ public class FavouriteFragment extends ListFragment {
     {
         List<VeloRoute> routeList = new ArrayList<VeloRoute>();
         VeloDbHelper dbHelper = VeloDbHelper.getInstance(getActivity());
-        routeList = dbHelper.getAllFavoruiteRoutes();
+        routeList = dbHelper.getAllFavouriteRoutes();
         return routeList;
     }
 
