@@ -23,8 +23,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:progress="20"
-            android:max="500" />
+            android:progress="300"
+            android:max="1000" />
 
         <TextView
             android:id="@+id/text_altitude"
@@ -39,7 +39,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:progress="20"
+            android:progress="100"
             android:max="300" />
 
         <Button
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:drawableStart="@drawable/velo_icon"
-            android:text="---- > ----    Find    ---- > ----"
+            android:text="----------    Find    ----------"
             android:drawableEnd="@drawable/velo_icon"
             android:layout_gravity="center_horizontal" />
 

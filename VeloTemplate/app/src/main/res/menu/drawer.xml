@@ -24,7 +24,7 @@
             android:id="@+id/filter"
             android:checked="false"
             android:icon="@drawable/ic_action_search"
-            android:title="Filters" />
+            android:title="Filter" />
 
         <item
             android:id="@+id/about"
