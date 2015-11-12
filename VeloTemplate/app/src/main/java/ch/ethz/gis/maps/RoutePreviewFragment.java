@@ -42,7 +42,6 @@ import java.util.LinkedList;
 
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.velotemplate.R;
-import ch.ethz.gis.velotemplate.VeloRouteListFragment;
 import ch.ethz.gis.velotemplate.VeloRoute;
 
 
@@ -251,8 +250,15 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         @Override
         protected KmlLayer doInBackground(String... kmlurls) {
 
-            //TODO: fix the looper problem
-            Looper.prepare();
+            /** Fix the looper problem
+                The exception is thrown because you (or core Android code) has already called Looper.prepare()
+                for the current executing thread.
+                The following checks whether a Looper already exists for the current thread, if not, it creates one,
+                thereby avoiding the RuntimeException.
+             */
+            if (Looper.myLooper() == null)
+                Looper.prepare();
+
             String kmlUrl = kmlurls[0];
             URL url = null;
             KmlLayer kmlLayer = null;
@@ -264,10 +270,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             }
             InputStream input = null;
             try {
-                Log.v("Debug", "##### starting to open stream");
                 input = url.openStream();
-                Log.v("Debug", "##### after open stream");
-                //TODO: HERE!!!
                 kmlLayer = new KmlLayer(mMap,input,context);
             } catch (IOException e) {
                 Log.e("KMLLoader:StreamIO", "****************** Error in KMLLoader: " + e.getMessage());
