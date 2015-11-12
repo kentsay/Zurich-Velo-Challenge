@@ -4,17 +4,21 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:background="@drawable/background">
 
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.3"
+        android:layout_weight="0.35"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="#ECEFF1"></FrameLayout>
+        android:background="#ffffff"
+        android:alpha="0.7">
+
+    </FrameLayout>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -27,13 +31,15 @@
             android:id="@+id/button1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="City tour"
+            android:text="Easy"
             android:layout_weight="1"
-            android:background="#FFC107"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
+            android:background="#ffffff"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="10dp"
+            android:alpha="0.7"
+            android:textColor="#5c7ed2" />
 
         <Button
             android:id="@+id/button2"
@@ -41,11 +47,13 @@
             android:layout_height="match_parent"
             android:text="Mountain"
             android:layout_weight="1"
-            android:background="#8BC34A"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="20dp"
+            android:background="#ffffff"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="5dp"
+            android:alpha="0.7"
+            android:textColor="#5c7ed2" />
     </LinearLayout>
 
     <LinearLayout
@@ -60,13 +68,15 @@
             android:id="@+id/button3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Lakeside"
-            android:background="#4FC3F7"
+            android:text="Long-distance"
+            android:background="#ffffff"
             android:layout_weight="0.50"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="20dp"
+            android:alpha="0.7"
+            android:textColor="#5c7ed2" />
 
         <Button
             android:layout_width="0dp"
@@ -74,11 +84,13 @@
             android:text="Random"
             android:id="@+id/button4"
             android:layout_weight="0.50"
-            android:background="#FF8A65"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
+            android:background="#ffffff"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="20dp"
+            android:alpha="0.7"
+            android:textColor="#5c7ed2" />
     </LinearLayout>
 
 </LinearLayout>
