@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.35"
+        android:layout_weight="0.4"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:background="#ffffff"
@@ -25,13 +25,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.25">
+        android:layout_weight="0.22">
 
-        <Button
+        <ImageButton
             android:id="@+id/button1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Easy"
             android:layout_weight="1"
             android:background="#ffffff"
             android:layout_marginRight="5dp"
@@ -39,13 +38,13 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
             android:alpha="0.7"
-            android:textColor="#5c7ed2" />
+            android:src="@drawable/easy_64"
+            android:scaleType="center" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Mountain"
             android:layout_weight="1"
             android:background="#ffffff"
             android:layout_marginLeft="5dp"
@@ -53,7 +52,8 @@
             android:layout_marginRight="20dp"
             android:layout_marginBottom="5dp"
             android:alpha="0.7"
-            android:textColor="#5c7ed2" />
+            android:src="@drawable/mountain_64"
+            android:scaleType="center" />
     </LinearLayout>
 
     <LinearLayout
@@ -61,10 +61,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.25"
+        android:layout_weight="0.22"
         android:weightSum="1">
 
-        <Button
+        <ImageButton
             android:id="@+id/button3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -76,21 +76,23 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="20dp"
             android:alpha="0.7"
-            android:textColor="#5c7ed2" />
+            android:src="@drawable/dummy_64"
+            android:scaleType="center" />
 
-        <Button
+        <ImageButton
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Random"
             android:id="@+id/button4"
-            android:layout_weight="0.50"
+            android:layout_weight="0.5"
             android:background="#ffffff"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
             android:alpha="0.7"
-            android:textColor="#5c7ed2" />
+            android:src="@drawable/random_64"
+            android:scaleType="center" />
+
     </LinearLayout>
 
 </LinearLayout>

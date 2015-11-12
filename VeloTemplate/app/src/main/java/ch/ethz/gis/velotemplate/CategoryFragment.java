@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 
 public class CategoryFragment extends Fragment implements View.OnClickListener{
@@ -14,9 +15,9 @@ public class CategoryFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.category_view, container, false);
 
-        Button easy = (Button)rootView.findViewById(R.id.button1);
-        Button medium = (Button)rootView.findViewById(R.id.button2);
-        Button hard = (Button)rootView.findViewById(R.id.button3);
+        ImageButton easy = (ImageButton)rootView.findViewById(R.id.button1);
+        ImageButton medium = (ImageButton)rootView.findViewById(R.id.button2);
+        ImageButton hard = (ImageButton)rootView.findViewById(R.id.button3);
 
         easy.setOnClickListener(this);
         medium.setOnClickListener(this);
