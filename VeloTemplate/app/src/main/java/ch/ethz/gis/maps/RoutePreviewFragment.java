@@ -106,6 +106,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         Projection  tempProjection = mMap.getProjection();
         setProjection(tempProjection);
         mMap.setOnCameraChangeListener(getCameraChangeListener());
+        mMap.setMyLocationEnabled(true);
+        mMap.setBuildingsEnabled(true);
+        mMap.setTrafficEnabled(true);
         String[] wmsurlsTest = {kmlUrl};
         loadKML loadKMLThread = new loadKML();
         loadKMLThread.execute(wmsurlsTest);
