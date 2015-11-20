@@ -8,90 +8,177 @@
     android:background="@drawable/background">
 
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.4"
+        android:layout_weight="0.33"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="#ffffff"
-        android:alpha="0.7">
+        android:layout_marginRight="20dp">
 
-    </FrameLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.22">
+        android:layout_weight="0.33"
+        android:baselineAligned="false"
+        android:layout_marginTop="10dp">
 
-        <ImageButton
-            android:id="@+id/button1"
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
+            android:alpha="0.7"
             android:background="#ffffff"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
-            android:alpha="0.7"
-            android:src="@drawable/easy_64"
-            android:scaleType="center" />
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp">
 
-        <ImageButton
-            android:id="@+id/button2"
+            <ImageButton
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/easy_100"
+                android:scaleType="center"
+                android:adjustViewBounds="true"
+                android:background="#ffffff"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Easy"
+                android:id="@+id/buttonText1"
+                android:layout_below="@+id/button1"
+                android:textColor="#2f6c92"
+                android:minHeight="10dp"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#ffffff"
+            android:layout_weight="0.5"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="5dp"
-            android:alpha="0.7"
-            android:src="@drawable/mountain_64"
-            android:scaleType="center" />
+            android:background="#ffffff"
+            android:alpha="0.7">
+
+            <ImageButton
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:src="@drawable/mountain_100"
+                android:scaleType="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mountain"
+                android:id="@+id/buttonText2"
+                android:layout_below="@+id/button2"
+                android:textSize="16dp"
+                android:textAlignment="center"
+                android:textColor="#2f6c92"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+        </RelativeLayout>
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.22"
+        android:layout_weight="0.33"
         android:weightSum="1">
 
-        <ImageButton
-            android:id="@+id/button3"
-            android:layout_width="0dp"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Long-distance"
-            android:background="#ffffff"
             android:layout_weight="0.50"
+            android:background="#ffffff"
+            android:alpha="0.7"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginBottom="20dp"
-            android:alpha="0.7"
-            android:src="@drawable/dummy_64"
-            android:scaleType="center" />
+            android:layout_marginBottom="20dp">
 
-        <ImageButton
-            android:layout_width="0dp"
+            <ImageButton
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Long-distance"
+                android:background="#ffffff"
+                android:layout_weight="0.50"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/distant_100"
+                android:scaleType="center"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Distant"
+                android:id="@+id/buttonText3"
+                android:textColor="#2f6c92"
+                android:layout_below="@+id/button3"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/button4"
-            android:layout_weight="0.5"
+            android:layout_weight="0.50"
             android:background="#ffffff"
+            android:alpha="0.7"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp"
-            android:alpha="0.7"
-            android:src="@drawable/random_64"
-            android:scaleType="center" />
+            android:layout_marginBottom="20dp">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button4"
+                android:layout_weight="0.5"
+                android:background="#ffffff"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/random_100"
+                android:scaleType="center"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Random"
+                android:id="@+id/buttonText4"
+                android:textColor="#2f6c92"
+                android:layout_below="@+id/button4"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+        </RelativeLayout>
 
     </LinearLayout>
 
