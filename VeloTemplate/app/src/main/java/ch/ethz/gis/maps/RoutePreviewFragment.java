@@ -1,11 +1,13 @@
 package ch.ethz.gis.maps;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
@@ -14,6 +16,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.content.DialogInterface;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,15 +31,20 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.geojson.GeoJsonLayer;
 import com.google.maps.android.kml.KmlContainer;
 import com.google.maps.android.kml.KmlLayer;
 import com.google.maps.android.kml.KmlLineString;
 import com.google.maps.android.kml.KmlPlacemark;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -71,6 +80,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private MenuItem fav;
     private MenuItem unfav;
     private Context context;
+    private GeoJsonLayer RoutingLayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +91,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         Intent i = getIntent();
 
         // read the route data from previous activity
-        route        = (VeloRoute)i.getSerializableExtra(ID_EXTRA);
+        route  = (VeloRoute)i.getSerializableExtra(ID_EXTRA);
         kmlUrl = route.getKml_url();
+
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Display display = getWindowManager().getDefaultDisplay();
@@ -106,7 +117,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         Projection  tempProjection = mMap.getProjection();
         setProjection(tempProjection);
         mMap.setOnCameraChangeListener(getCameraChangeListener());
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
         mMap.setBuildingsEnabled(true);
         mMap.setTrafficEnabled(true);
         String[] wmsurlsTest = {kmlUrl};
@@ -165,10 +176,108 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 Toast.makeText(context, "Removed from My Favourite", Toast.LENGTH_SHORT).show();
                 dbHelper.deleteFromFavourite(route.getId());
                 return true;
+            case R.id.navigation:
+                // if the navigation is clicked
+                openNavigation();
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
+        }
+
+
+    }
+
+
+    public boolean openNavigation() {
+
+        // This function does open the PopUp Menu to select different routing services
+        // e.g. routing to the next pumping station, routing along the route, etc.
+        final String [] options = new String [] {"To the next rental station", "Start navigation on route"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, options);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Routing");
+
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                // switch statement for the entries. Just take care of the entries, if you changed them above
+                if (which == 0) {
+                    // To the closest rental station
+                    //navToStation();
+                } else if(which == 1) {
+                        // Navigation on the route
+                        navOnRoute();
+                }
+
+            }
+        });
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+        return true;
+
+    }
+
+    public boolean navToStation() {
+        // TODO: Find closest rental station and navigate to it
+        return true;
+    }
+
+    public boolean navOnRoute() {
+        // get the current route to use its waypoints to query the Routing Service
+        // example query:
+        // http://www.gis.stadt-zuerich.ch/maps/rest/services/processing/RoutingVeloDirekt/NAServer/Route/solve?stops=680000%2C245000%3B681000%2C246000&barriers=&outSR=21781&ignoreInvalidLocations=true&accumulateAttributeNames=&impedanceAttributeName=Schnellste&restrictionAttributeNames=&restrictUTurns=esriNFSBAllowBacktrack&useHierarchy=false&returnDirections=true&returnRoutes=true&returnStops=false&returnBarriers=false&directionsLanguage=de_CH&outputLines=esriNAOutputLineTrueShapeWithMeasure&findBestSequence=false&preserveFirstStop=true&preserveLastStop=true&useTimeWindows=false&startTime=&outputGeometryPrecision=&outputGeometryPrecisionUnits=esriUnknownUnits&directionsTimeAttributeName=&directionsLengthUnits=esriNAUMeters&f=pjson
+
+        // TODO: Iterate through the route and convert them from WGS84 to CH1903 (Swiss Coordinate System)
+
+
+        String[] routUrl = {"http://www.gis.stadt-zuerich.ch/maps/rest/services/processing/RoutingVeloDirekt/NAServer/Route/solve?stops=680000%2C245000%3B681000%2C246000&barriers=&polylineBarriers=&polygonBarriers=&outSR=4326&ignoreInvalidLocations=false&accumulateAttributeNames=&impedanceAttributeName=Schnellste&restrictionAttributeNames=Abbiegeverbote%2C+Oneway&attributeParameterValues=&restrictUTurns=esriNFSBAllowBacktrack&useHierarchy=false&returnDirections=false&returnRoutes=true&returnStops=false&returnBarriers=false&returnPolylineBarriers=false&returnPolygonBarriers=false&directionsLanguage=de_CH&directionsStyleName=&outputLines=esriNAOutputLineTrueShape&findBestSequence=false&preserveFirstStop=true&preserveLastStop=true&useTimeWindows=false&startTime=0&startTimeIsUTC=false&outputGeometryPrecision=&outputGeometryPrecisionUnits=esriDecimalDegrees&directionsOutputType=esriDOTStandard&directionsTimeAttributeName=Schnellste&directionsLengthUnits=esriNAUMeters&returnZ=false&f=pjson"};
+        loadRouting loadRoutingThread = new loadRouting();
+        loadRoutingThread.execute(routUrl);
+        return true;
+    }
+
+    public class loadRouting extends  AsyncTask<String, Void, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(String... params) {
+            try {
+                // Open a stream from the URL
+                InputStream stream = new URL(params[0]).openStream();
+
+                String line;
+                StringBuilder result = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
+                while ((line = reader.readLine()) != null) {
+                    // Read and save each line of the stream
+                    //Log.d("Read-In", line);
+                    result.append(line);
+                }
+
+                // Close the stream
+                reader.close();
+                stream.close();
+
+                // Convert result to JSONObject
+                return new JSONObject(result.toString());
+            } catch (IOException e) {
+                Log.e("GeoJSONLoader", "GeoJSON file could not be read");
+            } catch (JSONException e) {
+                Log.e("GeoJSONLoader", "GeoJSON file could not be converted to a JSONObject");
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            if (jsonObject != null) {
+                // Create a new GeoJsonLayer, pass in downloaded GeoJSON file as JSONObject
+                RoutingLayer = new GeoJsonLayer(mMap, jsonObject);
+                // Add the layer onto the map
+                RoutingLayer.addLayerToMap();
+            }
         }
     }
 
@@ -286,7 +395,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
         @Override
         protected void onPostExecute(KmlLayer kmlLayer) {
-            Log.v("KML", "before it crash");
             // Iterate through the KML file to find its extend (bounds)
             KmlContainer container = kmlLayer.getContainers().iterator().next();
             //Retrieve the first placemark in the nested container
