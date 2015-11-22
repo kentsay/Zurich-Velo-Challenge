@@ -5,17 +5,31 @@
     android:orientation="vertical"
     android:gravity="center"
     android:weightSum="1"
-    android:background="@drawable/background">
+    android:background="@drawable/background"
+    android:baselineAligned="true"
+    android:focusableInTouchMode="true">
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.33"
+        android:layout_weight="0.4"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:src="@drawable/text"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentBottom="true"
+            android:adjustViewBounds="true"
+            android:alpha="0.8" />
     </RelativeLayout>
 
     <LinearLayout
@@ -31,9 +45,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
-            android:alpha="0.7"
-            android:background="#ffffff"
-            android:layout_marginLeft="20dp"
+            android:alpha="0.75"
+            android:background="@drawable/round_square"
+            android:layout_marginLeft="25dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp">
@@ -51,18 +65,17 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="16dp" />
 
-            <TextView
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Easy"
-                android:id="@+id/buttonText1"
+                android:id="@+id/imgText1"
+                android:src="@drawable/easy_text"
                 android:layout_below="@+id/button1"
-                android:textColor="#2f6c92"
-                android:minHeight="10dp"
-                android:textAlignment="center"
-                android:textSize="16dp"
-                android:textStyle="bold"
-                android:typeface="monospace" />
+                android:adjustViewBounds="false"
+                android:alpha="0.8"
+                android:layout_marginTop="-5dp"
+                android:layout_marginBottom="5dp" />
+
         </RelativeLayout>
 
         <RelativeLayout
@@ -71,10 +84,10 @@
             android:layout_weight="0.5"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="10dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="25dp"
             android:layout_marginBottom="5dp"
-            android:background="#ffffff"
-            android:alpha="0.7">
+            android:background="@drawable/round_square"
+            android:alpha="0.75">
 
             <ImageButton
                 android:id="@+id/button2"
@@ -87,17 +100,16 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="16dp" />
 
-            <TextView
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Mountain"
-                android:id="@+id/buttonText2"
+                android:id="@+id/imgText2"
+                android:src="@drawable/mountain_text"
                 android:layout_below="@+id/button2"
-                android:textSize="16dp"
-                android:textAlignment="center"
-                android:textColor="#2f6c92"
-                android:textStyle="bold"
-                android:typeface="monospace" />
+                android:alpha="0.8"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="-5dp" />
+
         </RelativeLayout>
     </LinearLayout>
 
@@ -113,9 +125,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.50"
-            android:background="#ffffff"
-            android:alpha="0.7"
-            android:layout_marginLeft="20dp"
+            android:background="@drawable/round_square"
+            android:alpha="0.75"
+            android:layout_marginLeft="25dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="20dp">
@@ -132,28 +144,27 @@
                 android:scaleType="center"
                 android:layout_centerHorizontal="true" />
 
-            <TextView
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Distant"
-                android:id="@+id/buttonText3"
-                android:textColor="#2f6c92"
+                android:id="@+id/imgText3"
                 android:layout_below="@+id/button3"
-                android:textAlignment="center"
-                android:textSize="16dp"
-                android:textStyle="bold"
-                android:typeface="monospace" />
+                android:src="@drawable/distant_text"
+                android:alpha="0.8"
+                android:layout_marginTop="-5dp"
+                android:layout_marginBottom="5dp" />
+
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.50"
-            android:background="#ffffff"
-            android:alpha="0.7"
+            android:background="@drawable/round_square"
+            android:alpha="0.75"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="25dp"
             android:layout_marginBottom="20dp">
 
             <ImageButton
@@ -167,17 +178,16 @@
                 android:scaleType="center"
                 android:layout_centerHorizontal="true" />
 
-            <TextView
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Random"
-                android:id="@+id/buttonText4"
-                android:textColor="#2f6c92"
+                android:id="@+id/imgText4"
+                android:src="@drawable/random_text"
                 android:layout_below="@+id/button4"
-                android:textAlignment="center"
-                android:textSize="16dp"
-                android:textStyle="bold"
-                android:typeface="monospace" />
+                android:alpha="0.8"
+                android:layout_marginTop="-5dp"
+                android:layout_marginBottom="5dp" />
+
         </RelativeLayout>
 
     </LinearLayout>
