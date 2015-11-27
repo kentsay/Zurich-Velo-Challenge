@@ -5,4 +5,5 @@
     <string name="action_settings">Settings</string>
     <string name="search_label">Search</string>
     <string name="search_hint">Names of routes</string>
+    <string name="rental_station_json">https://data.stadt-zuerich.ch/storage/f/veloverleih/veloverleih.json</string>
 </resources>
