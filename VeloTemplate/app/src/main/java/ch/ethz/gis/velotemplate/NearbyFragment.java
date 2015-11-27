@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.geojson.GeoJsonLayer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,22 +118,10 @@ public class NearbyFragment extends Fragment {
     private void showStations(String url, final GoogleMap map){
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
                     @Override
                     public void onResponse(JSONObject response) {
-                        JSONArray features = null;
-                        try {
-                            features = response.getJSONArray("features");
-                            for(int i = 0; i < features.length(); i++){
-                                JSONObject station = features.getJSONObject(i);
-                                JSONArray coordinate = station.getJSONObject("geometry").getJSONArray("coordinates");
-                                Log.d("Volley", coordinate.toString());
-                                LatLng latlng = new LatLng(coordinate.getDouble(1), coordinate.getDouble(0));
-                                map.addMarker(new MarkerOptions().position(latlng));
-                            }
-                        } catch(JSONException e){
-                            Log.d("Volley", "getJSONObject failed");
-                        }
+                        GeoJsonLayer layer = new GeoJsonLayer(map, response);
+                        layer.addLayerToMap();
                     }
                 }, new Response.ErrorListener() {
                     @Override
