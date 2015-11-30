@@ -20,6 +20,10 @@ import android.widget.ArrayAdapter;
 import android.content.DialogInterface;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -50,6 +54,7 @@ import java.net.URL;
 import java.util.LinkedList;
 
 import ch.ethz.gis.helper.VeloDbHelper;
+import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.velotemplate.R;
 import ch.ethz.gis.velotemplate.VeloRoute;
 
@@ -117,7 +122,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         Projection  tempProjection = mMap.getProjection();
         setProjection(tempProjection);
         mMap.setOnCameraChangeListener(getCameraChangeListener());
-        //mMap.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(true);
         mMap.setBuildingsEnabled(true);
         mMap.setTrafficEnabled(true);
         String[] wmsurlsTest = {kmlUrl};
@@ -185,8 +190,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
-
-
     }
 
 
@@ -233,52 +236,45 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
 
         String[] routUrl = {"http://www.gis.stadt-zuerich.ch/maps/rest/services/processing/RoutingVeloDirekt/NAServer/Route/solve?stops=680000%2C245000%3B681000%2C246000&barriers=&polylineBarriers=&polygonBarriers=&outSR=4326&ignoreInvalidLocations=false&accumulateAttributeNames=&impedanceAttributeName=Schnellste&restrictionAttributeNames=Abbiegeverbote%2C+Oneway&attributeParameterValues=&restrictUTurns=esriNFSBAllowBacktrack&useHierarchy=false&returnDirections=false&returnRoutes=true&returnStops=false&returnBarriers=false&returnPolylineBarriers=false&returnPolygonBarriers=false&directionsLanguage=de_CH&directionsStyleName=&outputLines=esriNAOutputLineTrueShape&findBestSequence=false&preserveFirstStop=true&preserveLastStop=true&useTimeWindows=false&startTime=0&startTimeIsUTC=false&outputGeometryPrecision=&outputGeometryPrecisionUnits=esriDecimalDegrees&directionsOutputType=esriDOTStandard&directionsTimeAttributeName=Schnellste&directionsLengthUnits=esriNAUMeters&returnZ=false&f=pjson"};
-        loadRouting loadRoutingThread = new loadRouting();
-        loadRoutingThread.execute(routUrl);
+        volleyLoadRoute(routUrl[0]);
         return true;
     }
 
-    public class loadRouting extends  AsyncTask<String, Void, JSONObject> {
+    public GeoJsonLayer testConverter(JSONObject json) throws JSONException {
+        //TODO: json cannot convert into the right format of GeoJson
+        GeoJsonLayer test = null;
+        test = new GeoJsonLayer(mMap, json.getJSONObject("routes"));
+        return test;
+    }
 
-        @Override
-        protected JSONObject doInBackground(String... params) {
-            try {
-                // Open a stream from the URL
-                InputStream stream = new URL(params[0]).openStream();
+    public void volleyLoadRoute(String url) {
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
-                String line;
-                StringBuilder result = new StringBuilder();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("map", response.toString());
+                        if (response != null) {
+                            // Create a new GeoJsonLayer, pass in downloaded GeoJSON file as JSONObject
+                            //RoutingLayer = new GeoJsonLayer(mMap, response);
+                            try {
+                                RoutingLayer = testConverter(response);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            // Add the layer onto the map
+                            RoutingLayer.addLayerToMap();
+                        }
+                    }
+                }, new Response.ErrorListener() {
 
-                while ((line = reader.readLine()) != null) {
-                    // Read and save each line of the stream
-                    //Log.d("Read-In", line);
-                    result.append(line);
-                }
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("GeoJSONLoader", error.getMessage());
+                    }
+                });
 
-                // Close the stream
-                reader.close();
-                stream.close();
-
-                // Convert result to JSONObject
-                return new JSONObject(result.toString());
-            } catch (IOException e) {
-                Log.e("GeoJSONLoader", "GeoJSON file could not be read");
-            } catch (JSONException e) {
-                Log.e("GeoJSONLoader", "GeoJSON file could not be converted to a JSONObject");
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            if (jsonObject != null) {
-                // Create a new GeoJsonLayer, pass in downloaded GeoJSON file as JSONObject
-                RoutingLayer = new GeoJsonLayer(mMap, jsonObject);
-                // Add the layer onto the map
-                RoutingLayer.addLayerToMap();
-            }
-        }
+        VolleyHelper.getInstance(this.context).addToRequestQueue(jsObjRequest);
     }
 
 
@@ -319,7 +315,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 Log.d("WMS URL", wmsUrl);
                 URL url = null;
                 try {
-                    url = new URL(wmsUrl);
+                        url = new URL(wmsUrl);
                 } catch (MalformedURLException e) {
                     Log.e("WMSLoader:Stream", e.getMessage());
                 }
