@@ -20,18 +20,25 @@ public class VeloRouteListFragment extends ListFragment {
     private VeloDbHelper dbHelper;
     private VeloRouteAdapter veloAdapter;
     private Bundle args;
-    private int distance;
-    private int altitude;
+    private int distMin;
+    private int distMax;
+    private int elevMin;
+    private int elevMax;
+    private boolean random;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.initialize();
         // if args is not null means calling the fragment from filter, else it's from default
-        if (args != null)
-            veloAdapter= new VeloRouteAdapter(getActivity(), getVeloRoutes(distance, altitude));
+        if (args != null) {
+            if (random)
+                veloAdapter = new VeloRouteAdapter(getActivity(), getRandomVeloRoutes());
+            else
+                veloAdapter = new VeloRouteAdapter(getActivity(), getVeloRoutes(distMin, elevMin, distMax, elevMax));
+        }
         else
-            veloAdapter= new VeloRouteAdapter(getActivity(), getAllVeloRoutes());
+            veloAdapter = new VeloRouteAdapter(getActivity(), getAllVeloRoutes());
         setListAdapter(veloAdapter);
     }
 
@@ -50,20 +57,28 @@ public class VeloRouteListFragment extends ListFragment {
         return routeList;
     }
 
-    private List<VeloRoute> getVeloRoutes(int distance, int altitude)
+    private List<VeloRoute> getRandomVeloRoutes()
     {
         routeList = new ArrayList<VeloRoute>();
-        routeList = dbHelper.getVeloRoutesByArgument(distance, altitude);
+        routeList = dbHelper.getRandomVeloRoutes();
+        return routeList;
+    }
+
+    private List<VeloRoute> getVeloRoutes(int distMin, int elevMin, int distMax, int elevMax)
+    {
+        routeList = new ArrayList<VeloRoute>();
+        routeList = dbHelper.getVeloRoutesByArgument(distMin, elevMin, distMax, elevMax);
         return routeList;
     }
 
     private void initialize() {
         args = this.getArguments();
         if (args != null) {
-            if (args.containsKey("distance"))
-                distance = args.getInt("distance", 1000);
-            if (args.containsKey("altitude"))
-                altitude = args.getInt("altitude", 1000);
+                distMin = args.getInt("distMin", 0);
+                elevMin = args.getInt("elevMin", 0);
+                distMax = args.getInt("distMax", 1000);
+                elevMax = args.getInt("elevMax", 1000);
+                random = args.getBoolean("random", false);
         }
         dbHelper = VeloDbHelper.getInstance(getActivity());
     }

@@ -148,10 +148,42 @@ public class VeloDbHelper extends SQLiteOpenHelper {
         return routesList;
     }
 
-    // Get Velo Routes from DB
-    public List<VeloRoute> getVeloRoutesByArgument(int distance, int altitude) {
+    // Get 30 random routes from DB
+    public List<VeloRoute> getRandomVeloRoutes() {
         List<VeloRoute> routesList = new ArrayList<>();
-        String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s WHERE distance < %d and elevation < %d", TABLE_ROUTES, distance, altitude);
+        String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s order by random() limit 30", TABLE_ROUTES);
+        Log.d("SQL", ROUTES_SELECT_QUERY);
+        db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(ROUTES_SELECT_QUERY, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    VeloRoute route = new VeloRoute();
+                    route.setId(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ID)));
+                    route.setRoute_name(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_NAME)));
+                    route.setElevation(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_ELEVATION)));
+                    route.setRoute_distance(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_DISTANCE)));
+                    route.setSnapshot_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_SNAPSHOT_URL)));
+                    route.setKml_url(cursor.getString(cursor.getColumnIndex(KEY_ROUTES_KML_URL)));
+                    routesList.add(route);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d("SQL", "Error while trying to get routes from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return routesList;
+    }
+
+    // Get Velo Routes from DB
+    public List<VeloRoute> getVeloRoutesByArgument(int distMin, int elevMin, int distMax, int elevMax) {
+        List<VeloRoute> routesList = new ArrayList<>();
+        String ROUTES_SELECT_QUERY = String.format("SELECT * FROM %s WHERE distance >= %d and distance < %d and elevation >= %d and elevation < %d",
+                TABLE_ROUTES, distMin, distMax, elevMin, elevMax);
+        Log.d("SQL", ROUTES_SELECT_QUERY);
 
         db = getReadableDatabase();
         Cursor cursor = db.rawQuery(ROUTES_SELECT_QUERY, null);

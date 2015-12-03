@@ -13,9 +13,9 @@ import android.widget.TextView;
 public class FilterFragment extends Fragment {
 
     private TextView distance;
-    private TextView altitude;
+    private TextView elevation;
     private SeekBar distanceFilter;
-    private SeekBar altitudeFilter;
+    private SeekBar elevationFilter;
     private Button findButton;
     private Bundle args;
 
@@ -40,19 +40,19 @@ public class FilterFragment extends Fragment {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 // set arguments for ListFragment to call DbHelper and change text
-                args.putInt("distance", distance_settings);
+                args.putInt("distMax", distance_settings);
                 distance.setText("Route distance: " + distance_settings + " km");
             }
         });
 
-        altitude.setText("Altitude diff: " + altitudeFilter.getProgress() + " hm");
-        altitudeFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int altitude_settings = 0;
+        elevation.setText("Route elevation: " + elevationFilter.getProgress() + " m");
+        elevationFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int elevation_settings = 0;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // set arguments for ListFragment to call DbHelper and change text
-                altitude_settings = progress;
-                altitude.setText("Altitude diff: " + altitude_settings + " hm");
+                elevation_settings = progress;
+                elevation.setText("Route elevation: " + elevation_settings + " m");
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -60,8 +60,8 @@ public class FilterFragment extends Fragment {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
-                args.putInt("altitude", altitude_settings);
-                altitude.setText("Altitude diff: " + altitude_settings + " hm");
+                args.putInt("elevMax", elevation_settings);
+                elevation.setText("Route elevation: " + elevation_settings + " m");
             }
         });
 
@@ -84,11 +84,11 @@ public class FilterFragment extends Fragment {
     private void initialize(View view) {
         args = new Bundle();
         distance = (TextView) view.findViewById(R.id.text_distance);
-        altitude = (TextView) view.findViewById(R.id.text_altitude);
+        elevation = (TextView) view.findViewById(R.id.text_elevation);
         distanceFilter = (SeekBar) view.findViewById(R.id.distance);
-        altitudeFilter = (SeekBar) view.findViewById(R.id.altitude);
-        args.putInt("distance", distanceFilter.getProgress());
-        args.putInt("altitude", altitudeFilter.getProgress());
+        elevationFilter = (SeekBar) view.findViewById(R.id.elevation);
+        args.putInt("distMax", distanceFilter.getProgress());
+        args.putInt("elevMax", elevationFilter.getProgress());
         findButton = (Button) view.findViewById(R.id.find);
     }
 
