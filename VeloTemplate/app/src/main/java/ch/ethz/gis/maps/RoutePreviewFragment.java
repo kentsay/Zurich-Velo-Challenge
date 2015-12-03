@@ -2,12 +2,12 @@ package ch.ethz.gis.maps;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
@@ -17,7 +17,6 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.content.DialogInterface;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -45,14 +44,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 
+import ch.ethz.gis.helper.SharedPreference;
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.velotemplate.R;
@@ -61,7 +59,6 @@ import ch.ethz.gis.velotemplate.VeloRoute;
 
 public class RoutePreviewFragment extends AppCompatActivity implements OnMapReadyCallback {
 
-    //handling different intent
     public final static String ID_EXTRA = "ROUTE";
 
     public GoogleMap mMap;
@@ -69,23 +66,23 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private static Projection projection;
     private static LatLngBounds mapBounds;
     private static int [] dimensions = new int[2];
+
     //init location for centre Zurich
     private LatLng  poslatlong = new LatLng(47.375806, 8.528130);
     private String kmlUrl = "";
 
-    public static LatLngBounds getBounds() {return mapBounds;}
-    public static int[] getDimensions () {return dimensions;}
-    public static Projection getProjection(){ return projection;}
-
-    public static void setProjection(Projection nProjection) {projection = nProjection;}
-    public static void setMapBounds(LatLngBounds nMapBounds) {mapBounds = nMapBounds;}
-
+    private SharedPreference sharedPreference;
     private VeloDbHelper dbHelper = VeloDbHelper.getInstance(this);
     private VeloRoute route;
     private MenuItem fav;
     private MenuItem unfav;
     private Context context;
     private GeoJsonLayer RoutingLayer;
+
+    public static int[] getDimensions () {return dimensions;}
+    public static Projection getProjection(){ return projection;}
+    public static void setProjection(Projection nProjection) {projection = nProjection;}
+    public static void setMapBounds(LatLngBounds nMapBounds) {mapBounds = nMapBounds;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +110,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
         // Getting GoogleMap object from the fragment
         fm.getMapAsync(this);
+
+        //Shared Preference setting
+        sharedPreference = new SharedPreference(this);
     }
 
     @Override
@@ -228,15 +228,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     }
 
     public boolean navOnRoute() {
-        // get the current route to use its waypoints to query the Routing Service
-        // example query:
-        // http://www.gis.stadt-zuerich.ch/maps/rest/services/processing/RoutingVeloDirekt/NAServer/Route/solve?stops=680000%2C245000%3B681000%2C246000&barriers=&outSR=21781&ignoreInvalidLocations=true&accumulateAttributeNames=&impedanceAttributeName=Schnellste&restrictionAttributeNames=&restrictUTurns=esriNFSBAllowBacktrack&useHierarchy=false&returnDirections=true&returnRoutes=true&returnStops=false&returnBarriers=false&directionsLanguage=de_CH&outputLines=esriNAOutputLineTrueShapeWithMeasure&findBestSequence=false&preserveFirstStop=true&preserveLastStop=true&useTimeWindows=false&startTime=&outputGeometryPrecision=&outputGeometryPrecisionUnits=esriUnknownUnits&directionsTimeAttributeName=&directionsLengthUnits=esriNAUMeters&f=pjson
-
-        // TODO: Iterate through the route and convert them from WGS84 to CH1903 (Swiss Coordinate System)
-
-
-        String[] routUrl = {"http://www.gis.stadt-zuerich.ch/maps/rest/services/processing/RoutingVeloDirekt/NAServer/Route/solve?stops=680000%2C245000%3B681000%2C246000&barriers=&polylineBarriers=&polygonBarriers=&outSR=4326&ignoreInvalidLocations=false&accumulateAttributeNames=&impedanceAttributeName=Schnellste&restrictionAttributeNames=Abbiegeverbote%2C+Oneway&attributeParameterValues=&restrictUTurns=esriNFSBAllowBacktrack&useHierarchy=false&returnDirections=false&returnRoutes=true&returnStops=false&returnBarriers=false&returnPolylineBarriers=false&returnPolygonBarriers=false&directionsLanguage=de_CH&directionsStyleName=&outputLines=esriNAOutputLineTrueShape&findBestSequence=false&preserveFirstStop=true&preserveLastStop=true&useTimeWindows=false&startTime=0&startTimeIsUTC=false&outputGeometryPrecision=&outputGeometryPrecisionUnits=esriDecimalDegrees&directionsOutputType=esriDOTStandard&directionsTimeAttributeName=Schnellste&directionsLengthUnits=esriNAUMeters&returnZ=false&f=pjson"};
-        volleyLoadRoute(routUrl[0]);
+        String routeUrl = sharedPreference.getValue("route_url");
+        volleyLoadRoute(routeUrl);
         return true;
     }
 
@@ -279,7 +272,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
 
     public class loadBasemap extends AsyncTask<String, Void, Bitmap>{
-        // create mapBounds for each thread
+
         private LatLngBounds mapBounds;
 
         @Override
@@ -301,21 +294,20 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             bounds[2] = ur.latitude;
             bounds[3] = ur.longitude;
 
-            // check if the wanted layer is outside of the queryable layer -> download not needed
-            // layer bounding box of opendata Zurich:
-            // http://www.gis.stadt-zuerich.ch/maps/services/wms/WMS-ZH-STZH-OGD/MapServer/WMSServer?SERVICE=WMS&Request=GetCapabilities
-            // <BoundingBox CRS="EPSG:4326" minx="47.310593" miny="8.427483" maxx="47.447433" maxy="8.633024"/>
+            /**
+             * check if the wanted layer is outside of the queryable layer -> download not needed layer bounding box of opendata Zurich
+             * http://www.gis.stadt-zuerich.ch/maps/services/wms/WMS-ZH-STZH-OGD/MapServer/WMSServer?SERVICE=WMS&Request=GetCapabilities
+             * <BoundingBox CRS="EPSG:4326" minx="47.310593" miny="8.427483" maxx="47.447433" maxy="8.633024"/>
+             */
             if (bounds[0] > 47.310593 && bounds[1] > 8.427483 && bounds[2] < 47.447433 && bounds[3] < 8.633024) {
                 // we are inside the bounds -> download layer
-                String wmsUrl = "http://www.gis.stadt-zuerich.ch/maps/services/wms/WMS-ZH-STZH-OGD/MapServer/WMSServer?" +
-                        "VERSION=1.3.0&REQUEST=GetMap&CRS=EPSG:4326&STYLES=default&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=TRUE&BBOX=" +
+                String wmsUrl = sharedPreference.getValue("base_map_url") +
                         Double.toString(bounds[0]) + "," + Double.toString(bounds[1]) + "," + Double.toString(bounds[2]) + ","
                         + Double.toString(bounds[3]) + "&WIDTH=" + dimensions[0] + "&HEIGHT=" + dimensions[1] + "&Layers=Uebersichtsplan";
 
-                Log.d("WMS URL", wmsUrl);
                 URL url = null;
                 try {
-                        url = new URL(wmsUrl);
+                    url = new URL(wmsUrl);
                 } catch (MalformedURLException e) {
                     Log.e("WMSLoader:Stream", e.getMessage());
                 }
@@ -323,7 +315,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 try {
                     input = url.openStream();
                 } catch (IOException e) {
-                    Log.wtf("WMSLoader:Stream", "****************** Error in WMSLoader: " + e.getMessage());
+                    Log.wtf("WMSLoader:Stream", "Error in WMSLoader: " + e.getMessage());
                 }
                 return BitmapFactory.decodeStream(input);
             } else {
@@ -336,8 +328,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         protected void onPostExecute(Bitmap bitmap) {
 
             if (bitmap != null) {
-                // bitmap is ready!
-                // create new overlay
                 GroundOverlay newOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromBitmap(bitmap))
                         .positionFromBounds(this.mapBounds));
@@ -381,7 +371,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 input = url.openStream();
                 kmlLayer = new KmlLayer(mMap,input,context);
             } catch (IOException e) {
-                Log.e("KMLLoader:StreamIO", "****************** Error in KMLLoader: " + e.getMessage());
+                Log.e("KMLLoader:StreamIO", "Error in KMLLoader: " + e.getMessage());
             } catch (XmlPullParserException e) {
                 Log.e("KMSLoader:StreamXML", "Error setting the kml layer: " + e.getMessage());
             }
