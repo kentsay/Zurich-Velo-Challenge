@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
@@ -88,6 +90,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private Context context;
     private GeoJsonLayer routingLayer;
     private GeoJsonLayer rentalLayer;
+    private LocationListener locationListener;
+    private LocationManager locationManager;
 
     public static int[] getDimensions () {return dimensions;}
     public static Projection getProjection(){ return projection;}
@@ -124,6 +128,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         //Shared Preference setting
         sharedPreference = new SharedPreference(this);
 
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         // request the rental stations
         getRentalLocation(getString(R.string.rental_station_json));
     }
@@ -136,11 +141,23 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         setProjection(tempProjection);
         mMap.setOnCameraChangeListener(getCameraChangeListener());
         mMap.setMyLocationEnabled(true);
-        mMap.setBuildingsEnabled(true);
-        mMap.setTrafficEnabled(true);
+        //mMap.setBuildingsEnabled(true);
+        //mMap.setTrafficEnabled(true);
         String[] wmsurlsTest = {kmlUrl};
         loadKML loadKMLThread = new loadKML();
         loadKMLThread.execute(wmsurlsTest);
+
+        // Set up the location listener
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 14));
+            }
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onProviderEnabled(String provider) {}
+            public void onProviderDisabled(String provider) {}
+        };
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
     public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
