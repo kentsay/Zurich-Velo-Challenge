@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
@@ -34,7 +35,9 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.geojson.GeoJsonFeature;
 import com.google.maps.android.geojson.GeoJsonLayer;
+import com.google.maps.android.geojson.GeoJsonPoint;
 import com.google.maps.android.kml.KmlContainer;
 import com.google.maps.android.kml.KmlLayer;
 import com.google.maps.android.kml.KmlLineString;
@@ -50,9 +53,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 
+import ch.ethz.gis.helper.CoordinatesUtil;
 import ch.ethz.gis.helper.SharedPreference;
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.helper.VolleyHelper;
+import ch.ethz.gis.velotemplate.NearbyFragment;
 import ch.ethz.gis.velotemplate.R;
 import ch.ethz.gis.velotemplate.VeloRoute;
 
@@ -208,7 +213,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 // switch statement for the entries. Just take care of the entries, if you changed them above
                 if (which == 0) {
                     // To the closest rental station
-                    //navToStation();
+                    navToStation();
                 } else if(which == 1) {
                         // Navigation on the route
                     /**
@@ -246,6 +251,36 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
     public boolean navToStation() {
         // TODO: Find closest rental station and navigate to it
+        NearbyFragment nearbyFragment = new NearbyFragment();
+        // request the rental stations
+        nearbyFragment.getRentalLocation(getString(R.string.rental_station_json));
+        // query the current location
+        Location mylocation = mMap.getMyLocation();
+        GeoJsonLayer mLayer = nearbyFragment.mLayer;
+        // iterate through all rental stations to find the closest one to the current location
+        double distance = Math.pow(10,10);
+        LatLng bestStation;
+        for (GeoJsonFeature feature : mLayer.getFeatures()) {
+            // get the latitude/longitude of the rental station
+            LatLng rentalLocation = ((GeoJsonPoint)feature.getGeometry()).getCoordinates();
+            // calculate the distance
+            double tempdistance = Math.sqrt((Math.pow(mylocation.getLatitude()-rentalLocation.latitude,2)+ Math.pow(mylocation.getLongitude()-rentalLocation.longitude,2)));
+            Log.d("Dist Loc-RentalStation", Double.toString(distance));
+            // check distance
+            if (tempdistance < distance) {
+                // distance to this rental station is shorter...
+                bestStation = new LatLng(rentalLocation.latitude,rentalLocation.longitude);
+                distance = tempdistance;
+            }
+        }
+
+        // Transform the coordinates to swiss coordinate System CH1903
+        CoordinatesUtil coordinatesUtil = new CoordinatesUtil();
+        double[] locationSwiss = coordinatesUtil.WGS84toLV03(mylocation.getLatitude(),mylocation.getLongitude(),mylocation.getAltitude());
+        double [] rentalStationSwiss = coordinatesUtil.WGS84toLV03(bestStation.latitude,bestStation.longitude,bestStation.)
+        // query the routing service to navigate from current location to the closest rental station
+
+
         return true;
     }
 
