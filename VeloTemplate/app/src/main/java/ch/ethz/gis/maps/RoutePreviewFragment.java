@@ -218,6 +218,15 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                      *  2. Load the velo route and extract the staring point, or the nearest point from current location
                      *  3. Pass the current location and starting point into the WMS routing service
                      *
+                     *  WMS process:
+                     *  1. call REST API through Volley(done)
+                     *  2. Parse the json object into several information:
+                     *      - layer: JSONObject->routes->features[0]->geometry->paths[array]
+                     *      - directions: JSONObject->directions->summary
+                     *                    JSONObject->directions->features[array]
+                     *  3. Convert layer into GsonLayer and display on baseMap
+                     *  4. Convert directions data into adapter for display use
+                     *
                      *  Post-process:
                      *  1. Create the Routing List Fragment and populates the Listview (Navigation Drawer) using a custom adapter
                      *  2. (not sure) When the user clicks on the Get Direction button on the bottom layout, a dialog box appears
