@@ -258,7 +258,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         return test;
     }
 
-    public void volleyLoadRoute(double start_x, double start_y, double end_x, double end_y) {
+    public void volleyLoadRoute(double start_y, double start_x, double end_y, double end_x) {
         String url = sharedPreference.getValue("route_url");
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
