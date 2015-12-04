@@ -55,7 +55,7 @@ import java.util.LinkedList;
 
 import ch.ethz.gis.helper.CoordinatesUtil;
 
-import ch.ethz.gis.helper.GeoJsonUtil;
+import ch.ethz.gis.helper.GeoUtil;
 
 import ch.ethz.gis.helper.SharedPreference;
 import ch.ethz.gis.helper.VeloDbHelper;
@@ -85,7 +85,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private MenuItem fav;
     private MenuItem unfav;
     private Context context;
-    private GeoJsonLayer RoutingLayer;
+    private GeoJsonLayer routingLayer;
+    private GeoJsonLayer rentalLayer;
 
     public static int[] getDimensions () {return dimensions;}
     public static Projection getProjection(){ return projection;}
@@ -289,9 +290,27 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         return true;
     }
 
+    public void getRentalLocation(String url){
+        // Request JSON file by Volley
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        rentalLayer = GeoUtil.addJsonFeature(mMap, response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Volley", "JSONObjectRequest error");
+                    }
+                });
+        VolleyHelper.getInstance(this.context).addToRequestQueue(jsObjRequest);
+    }
+
+
     public GeoJsonLayer testConverter(JSONObject json) throws JSONException {
         //TODO: json cannot convert into the right format of GeoJson
-        GeoJsonLayer test = GeoJsonUtil.covert(mMap, json);
+        GeoJsonLayer test = GeoUtil.covert(mMap, json);
         return test;
     }
 
@@ -305,12 +324,12 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                         Log.d("map", response.toString());
                         if (response != null) {
                             try {
-                                RoutingLayer = testConverter(response);
+                                routingLayer = testConverter(response);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                             // Add the layer onto the map
-                            RoutingLayer.addLayerToMap();
+                            routingLayer.addLayerToMap();
                         }
                     }
                 }, new Response.ErrorListener() {
