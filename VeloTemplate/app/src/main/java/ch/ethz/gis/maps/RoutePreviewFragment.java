@@ -282,7 +282,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // Transform the coordinates to swiss coordinate System CH1903
         CoordinatesUtil coordinatesUtil = new CoordinatesUtil();
         double[] locationSwiss = coordinatesUtil.WGS84toLV03(mylocation.getLatitude(),mylocation.getLongitude(),mylocation.getAltitude());
-        double [] rentalStationSwiss = coordinatesUtil.WGS84toLV03(bestStation.latitude,bestStation.longitude,bestStation.)
+        double [] rentalStationSwiss = new double[2];
         // query the routing service to navigate from current location to the closest rental station
 
 
