@@ -44,7 +44,7 @@ public class NearbyFragment extends Fragment {
 
     MapView mMapView;
     GoogleMap mMap;
-    GeoJsonLayer mLayer;
+    public GeoJsonLayer mLayer;
     private static final double[] zurich = {47.375806, 8.528130};
     private static final double latlng_thres = 1e-2;
     private static final int TAG_NB_BIKE = 1;
@@ -129,7 +129,7 @@ public class NearbyFragment extends Fragment {
         mMapView.onLowMemory();
     }
 
-    private void getRentalLocation(String url){
+    public void getRentalLocation(String url){
         // Request JSON file by Volley
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
