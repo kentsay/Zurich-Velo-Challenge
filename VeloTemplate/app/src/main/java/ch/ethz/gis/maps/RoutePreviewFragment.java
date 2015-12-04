@@ -1,6 +1,7 @@
 package ch.ethz.gis.maps;
 
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -264,7 +265,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         GeoJsonLayer mLayer = nearbyFragment.mLayer;
         // iterate through all rental stations to find the closest one to the current location
         double distance = Math.pow(10,10);
-        LatLng bestStation;
+        LatLng bestStation = new LatLng(0,0);
         for (GeoJsonFeature feature : mLayer.getFeatures()) {
             // get the latitude/longitude of the rental station
             LatLng rentalLocation = ((GeoJsonPoint)feature.getGeometry()).getCoordinates();
@@ -283,8 +284,10 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         CoordinatesUtil coordinatesUtil = new CoordinatesUtil();
         double[] locationSwiss = coordinatesUtil.WGS84toLV03(mylocation.getLatitude(),mylocation.getLongitude(),mylocation.getAltitude());
         double [] rentalStationSwiss = new double[2];
+        rentalStationSwiss[1] = coordinatesUtil.WGStoCHy(bestStation.latitude, bestStation.longitude);
+        rentalStationSwiss[2] = coordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
         // query the routing service to navigate from current location to the closest rental station
-
+        //volleyLoadRoute(locationSwiss[1],locationSwiss[2],rentalStationSwiss[1],rentalStationSwiss[2]);
 
         return true;
     }

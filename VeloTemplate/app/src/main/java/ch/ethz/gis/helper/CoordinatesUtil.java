@@ -146,7 +146,7 @@ public class CoordinatesUtil {
     }
 
     // Convert WGS lat/long (° dec) to CH x
-    private static double WGStoCHx(double lat, double lng) {
+    public static double WGStoCHx(double lat, double lng) {
         // Converts dec degrees to sex seconds
         lat = DecToSexAngle(lat);
         lng = DecToSexAngle(lng);
@@ -165,7 +165,7 @@ public class CoordinatesUtil {
     }
 
     // Convert WGS lat/long (° dec) to CH y
-    private static double WGStoCHy(double lat, double lng) {
+    public static double WGStoCHy(double lat, double lng) {
         // Converts dec degrees to sex seconds
         lat = DecToSexAngle(lat);
         lng = DecToSexAngle(lng);
