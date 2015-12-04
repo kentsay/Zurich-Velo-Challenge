@@ -337,7 +337,11 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     }
 
     public void volleyLoadRoute(double start_y, double start_x, double end_y, double end_x) {
-        String url = sharedPreference.getValue("route_url");
+        String default_url = sharedPreference.getValue("route_url");
+        int strStart = default_url.indexOf("stops=") + 6;
+        int strEnd = default_url.indexOf("&", strStart);
+        String url = default_url.substring(0, strStart) + String.format("%f%%2C%f%%3B%f%%2C%f", start_y, start_x, end_y, end_x) + default_url.substring(strEnd);
+        Log.d("map", url);
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
