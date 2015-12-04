@@ -211,6 +211,19 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                     //navToStation();
                 } else if(which == 1) {
                         // Navigation on the route
+                    /**
+                     *  Some steps about the routing service
+                     *  Pre-process:
+                     *  1. Get the current location
+                     *  2. Load the velo route and extract the staring point, or the nearest point from current location
+                     *  3. Pass the current location and starting point into the WMS routing service
+                     *
+                     *  Post-process:
+                     *  1. Create the Routing List Fragment and populates the Listview (Navigation Drawer) using a custom adapter
+                     *  2. (not sure) When the user clicks on the Get Direction button on the bottom layout, a dialog box appears
+                     *  3. (not sure) LocationListener will keep updating. When user is approaching some specific checkpoint, the
+                     *      dialog box will appears and show the next direction
+                     */
                         navOnRoute();
                 }
 
