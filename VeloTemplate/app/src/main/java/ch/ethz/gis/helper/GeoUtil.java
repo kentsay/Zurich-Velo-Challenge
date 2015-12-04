@@ -13,11 +13,15 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class GeoJsonUtil {
+public class GeoUtil {
 
-    public static GeoJsonLayer covert(GoogleMap mMap, JSONObject json) {
+    public static GeoJsonLayer covert(GoogleMap mMap, JSONObject json) throws JSONException {
         GeoJsonLayer layer;
         JSONObject geoJson = new JSONObject();
+
+        JSONObject routes = json.getJSONObject("routes");
+        JSONObject features = routes.getJSONObject("features");
+        JSONObject geometry = features.getJSONObject("geometry");
 
         /* testing data to add GeoJsonPoint back to GeoJsonLayer*/
         double[] coord = CoordinatesUtil.LV03toWGS84(680200.7672000006, 245139.80000000075, 0);
@@ -39,7 +43,22 @@ public class GeoJsonUtil {
         layer = new GeoJsonLayer(mMap, geoJson);
         layer.addFeature(pointFeature);
 
-
         return layer;
     }
+
+    public static GeoJsonLayer addJsonFeature(GoogleMap mMap, JSONObject response) {
+        GeoJsonLayer mLayer = new GeoJsonLayer(mMap, response);
+        for (GeoJsonFeature feature : mLayer.getFeatures()) {
+            if (feature.hasProperty("Name")) {
+                GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
+                pointStyle.setTitle(feature.getProperty("Name"));
+                feature.setPointStyle(pointStyle);
+            }
+        }
+        mLayer.addLayerToMap();
+        return mLayer;
+    }
+
+
+
 }

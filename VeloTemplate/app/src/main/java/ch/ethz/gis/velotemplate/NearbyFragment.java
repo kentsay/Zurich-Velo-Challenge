@@ -34,6 +34,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ch.ethz.gis.helper.GeoUtil;
 import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.helper.XMLRequest;
 
@@ -130,20 +131,12 @@ public class NearbyFragment extends Fragment {
     }
 
     public void getRentalLocation(String url){
-        // Request JSON file by Volley
+        // Request JSON file by Volleys
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        mLayer = new GeoJsonLayer(mMap, response);
-                        for (GeoJsonFeature feature : mLayer.getFeatures()) {
-                            if (feature.hasProperty("Name")) {
-                                GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
-                                pointStyle.setTitle(feature.getProperty("Name"));
-                                feature.setPointStyle(pointStyle);
-                            }
-                        }
-                        mLayer.addLayerToMap();
+                        mLayer = GeoUtil.addJsonFeature(mMap, response);
                     }
                 }, new Response.ErrorListener() {
                     @Override
