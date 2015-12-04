@@ -50,6 +50,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 
+import ch.ethz.gis.helper.GeoJsonUtil;
 import ch.ethz.gis.helper.SharedPreference;
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.helper.VolleyHelper;
@@ -233,7 +234,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                      *  3. (not sure) LocationListener will keep updating. When user is approaching some specific checkpoint, the
                      *      dialog box will appears and show the next direction
                      */
-                        navOnRoute();
+
+                    //different testing data
+                    volleyLoadRoute(680200.7672000006, 245139.80000000075, 681035.2903000005, 245954.14919999987);
                 }
 
             }
@@ -249,20 +252,14 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         return true;
     }
 
-    public boolean navOnRoute() {
-        String routeUrl = sharedPreference.getValue("route_url");
-        volleyLoadRoute(routeUrl);
-        return true;
-    }
-
     public GeoJsonLayer testConverter(JSONObject json) throws JSONException {
         //TODO: json cannot convert into the right format of GeoJson
-        GeoJsonLayer test = null;
-        test = new GeoJsonLayer(mMap, json.getJSONObject("routes"));
+        GeoJsonLayer test = GeoJsonUtil.covert(mMap, json);
         return test;
     }
 
-    public void volleyLoadRoute(String url) {
+    public void volleyLoadRoute(double start_x, double start_y, double end_x, double end_y) {
+        String url = sharedPreference.getValue("route_url");
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
@@ -270,8 +267,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                     public void onResponse(JSONObject response) {
                         Log.d("map", response.toString());
                         if (response != null) {
-                            // Create a new GeoJsonLayer, pass in downloaded GeoJSON file as JSONObject
-                            //RoutingLayer = new GeoJsonLayer(mMap, response);
                             try {
                                 RoutingLayer = testConverter(response);
                             } catch (JSONException e) {
