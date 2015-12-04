@@ -123,6 +123,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
         //Shared Preference setting
         sharedPreference = new SharedPreference(this);
+
+        // request the rental stations
+        getRentalLocation(getString(R.string.rental_station_json));
     }
 
     @Override
@@ -257,20 +260,20 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     }
 
     public boolean navToStation() {
-        // TODO: Find closest rental station and navigate to it
-        NearbyFragment nearbyFragment = new NearbyFragment();
-        // request the rental stations
-        nearbyFragment.getRentalLocation(getString(R.string.rental_station_json));
+
         // query the current location
         Location mylocation = mMap.getMyLocation();
-        GeoJsonLayer mLayer = nearbyFragment.mLayer;
         // iterate through all rental stations to find the closest one to the current location
         double distance = Math.pow(10,10);
         LatLng bestStation = new LatLng(0,0);
-        for (GeoJsonFeature feature : mLayer.getFeatures()) {
+        // TODO: debug -> Rental layer is null...
+        for (GeoJsonFeature feature : rentalLayer.getFeatures()) {
             // get the latitude/longitude of the rental station
             LatLng rentalLocation = ((GeoJsonPoint)feature.getGeometry()).getCoordinates();
             // calculate the distance
+            Log.d("rentalStation",rentalLocation.latitude + " " + rentalLocation.longitude);
+            Log.d("Location", mylocation.getLatitude() + " " + mylocation.getLongitude());
+
             double tempdistance = Math.sqrt((Math.pow(mylocation.getLatitude()-rentalLocation.latitude,2)+ Math.pow(mylocation.getLongitude()-rentalLocation.longitude,2)));
             Log.d("Dist Loc-RentalStation", Double.toString(distance));
             // check distance
@@ -282,13 +285,12 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         }
 
         // Transform the coordinates to swiss coordinate System CH1903
-        CoordinatesUtil coordinatesUtil = new CoordinatesUtil();
-        double[] locationSwiss = coordinatesUtil.WGS84toLV03(mylocation.getLatitude(),mylocation.getLongitude(),mylocation.getAltitude());
+        double[] locationSwiss = CoordinatesUtil.WGS84toLV03(mylocation.getLatitude(),mylocation.getLongitude(),mylocation.getAltitude());
         double [] rentalStationSwiss = new double[2];
-        rentalStationSwiss[1] = coordinatesUtil.WGStoCHy(bestStation.latitude, bestStation.longitude);
-        rentalStationSwiss[2] = coordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
+        rentalStationSwiss[0] = CoordinatesUtil.WGStoCHy(bestStation.latitude, bestStation.longitude);
+        rentalStationSwiss[1] = CoordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
         // query the routing service to navigate from current location to the closest rental station
-        //volleyLoadRoute(locationSwiss[1],locationSwiss[2],rentalStationSwiss[1],rentalStationSwiss[2]);
+        volleyLoadRoute(locationSwiss[0],locationSwiss[1],rentalStationSwiss[0],rentalStationSwiss[1]);
 
         return true;
     }
