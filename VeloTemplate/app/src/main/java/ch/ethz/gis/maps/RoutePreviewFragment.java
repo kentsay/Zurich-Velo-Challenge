@@ -145,7 +145,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 14));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
             }
             public void onStatusChanged(String provider, int status, Bundle extras) {}
             public void onProviderEnabled(String provider) {}
