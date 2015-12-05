@@ -257,11 +257,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                      *  3. (not sure) LocationListener will keep updating. When user is approaching some specific checkpoint, the
                      *      dialog box will appears and show the next direction
                      */
-                    Location mylocation = mMap.getMyLocation();
-                    double[] location = CoordinatesUtil.WGS84toLV03(mylocation.getLatitude(), mylocation.getLongitude(), 0);
-                    //different testing data
-                    Log.v("loc", String.valueOf(location[0]) + " " + String.valueOf(location[1]));
-                    volleyLoadRoute(location[0], location[1], 681035.2903000005, 245954.14919999987);
+                    navToRoute();
                 }
 
             }
@@ -272,7 +268,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
     }
 
-    public boolean navToStation() {
+    private boolean navToStation() {
 
         Location mylocation = GeoUtil.getCurrentLocation(mMap);
         // iterate through all rental stations to find the closest one to the current location
@@ -302,12 +298,12 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         rentalStationSwiss[0] = CoordinatesUtil.WGStoCHy(bestStation.latitude, bestStation.longitude);
         rentalStationSwiss[1] = CoordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
         // query the routing service to navigate from current location to the closest rental station
-        volleyLoadRoute(locationSwiss[0],locationSwiss[1],rentalStationSwiss[0],rentalStationSwiss[1]);
+        volleyLoadRoute(locationSwiss[0], locationSwiss[1], rentalStationSwiss[0], rentalStationSwiss[1]);
 
         return true;
     }
 
-    public void getRentalLocation(String url){
+    private void getRentalLocation(String url){
         // Request JSON file by Volley
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -324,14 +320,14 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         VolleyHelper.getInstance(this.context).addToRequestQueue(jsObjRequest);
     }
 
-
-    public GeoJsonLayer testConverter(JSONObject json) throws JSONException {
-        //TODO: json cannot convert into the right format of GeoJson
-        GeoJsonLayer test = GeoUtil.convert(mMap, json);
-        return test;
+    private void navToRoute() {
+        Location mylocation = mMap.getMyLocation();
+        double[] location = CoordinatesUtil.WGS84toLV03(mylocation.getLatitude(), mylocation.getLongitude(), 0);
+        //TODO: find route start point
+        volleyLoadRoute(location[0], location[1], 681000, 246000);
     }
 
-    public void volleyLoadRoute(double start_y, double start_x, double end_y, double end_x) {
+    private void volleyLoadRoute(double start_y, double start_x, double end_y, double end_x) {
         String default_url = sharedPreference.getValue("route_url");
         int strStart = default_url.indexOf("stops=") + 6;
         String url = default_url.substring(0, strStart) + String.format("%f%%2C%f%%3B%f%%2C%f", start_y, start_x, end_y, end_x);
@@ -344,7 +340,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                         Log.d("map", response.toString());
                         if (response != null) {
                             try {
-                                routingLayer = testConverter(response);
+                                routingLayer = GeoUtil.convert(mMap, response);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -454,6 +450,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
             try {
                 url = new URL(kmlUrl);
+                Log.v("kml", kmlUrl);
             } catch (MalformedURLException e) {
                 Log.e("KMLLoader:Stream", e.getMessage());
             }
