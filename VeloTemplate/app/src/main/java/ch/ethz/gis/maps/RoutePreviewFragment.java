@@ -1,7 +1,6 @@
 package ch.ethz.gis.maps;
 
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -55,13 +54,10 @@ import java.net.URL;
 import java.util.LinkedList;
 
 import ch.ethz.gis.helper.CoordinatesUtil;
-
 import ch.ethz.gis.helper.GeoUtil;
-
 import ch.ethz.gis.helper.SharedPreference;
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.helper.VolleyHelper;
-import ch.ethz.gis.velotemplate.NearbyFragment;
 import ch.ethz.gis.velotemplate.R;
 import ch.ethz.gis.velotemplate.VeloRoute;
 
@@ -125,7 +121,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         sharedPreference = new SharedPreference(this);
 
         // request the rental stations
-        getRentalLocation(getString(R.string.rental_station_json));
+//        getRentalLocation(getString(R.string.rental_station_json));
     }
 
     @Override
@@ -137,7 +133,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         mMap.setOnCameraChangeListener(getCameraChangeListener());
         mMap.setMyLocationEnabled(true);
         mMap.setBuildingsEnabled(true);
-        mMap.setTrafficEnabled(true);
         String[] wmsurlsTest = {kmlUrl};
         loadKML loadKMLThread = new loadKML();
         loadKMLThread.execute(wmsurlsTest);
@@ -246,9 +241,11 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                      *  3. (not sure) LocationListener will keep updating. When user is approaching some specific checkpoint, the
                      *      dialog box will appears and show the next direction
                      */
-
+                    Location mylocation = mMap.getMyLocation();
+                    double[] location = CoordinatesUtil.WGS84toLV03(mylocation.getLatitude(), mylocation.getLongitude(), 0);
                     //different testing data
-                    volleyLoadRoute(680200.7672000006, 245139.80000000075, 681035.2903000005, 245954.14919999987);
+                    Log.v("loc", String.valueOf(location[0]) + " " + String.valueOf(location[1]));
+                    volleyLoadRoute(location[0], location[1], 681035.2903000005, 245954.14919999987);
                 }
 
             }
@@ -261,8 +258,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
     public boolean navToStation() {
 
-        // query the current location
-        Location mylocation = mMap.getMyLocation();
+        Location mylocation = GeoUtil.getCurrentLocation(mMap);
         // iterate through all rental stations to find the closest one to the current location
         double distance = Math.pow(10,10);
         LatLng bestStation = new LatLng(0,0);
@@ -315,7 +311,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
     public GeoJsonLayer testConverter(JSONObject json) throws JSONException {
         //TODO: json cannot convert into the right format of GeoJson
-        GeoJsonLayer test = GeoUtil.covert(mMap, json);
+        GeoJsonLayer test = GeoUtil.convert(mMap, json);
         return test;
     }
 
@@ -333,7 +329,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            // Add the layer onto the map
                             routingLayer.addLayerToMap();
                         }
                     }
@@ -347,7 +342,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
         VolleyHelper.getInstance(this.context).addToRequestQueue(jsObjRequest);
     }
-
 
     public class loadBasemap extends AsyncTask<String, Void, Bitmap>{
 
