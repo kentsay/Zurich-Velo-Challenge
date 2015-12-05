@@ -126,7 +126,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         // request the rental stations
-//        getRentalLocation(getString(R.string.rental_station_json));
+        getRentalLocation(getString(R.string.rental_station_json));
     }
 
     @Override
@@ -330,8 +330,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private void volleyLoadRoute(double start_y, double start_x, double end_y, double end_x) {
         String default_url = sharedPreference.getValue("route_url");
         int strStart = default_url.indexOf("stops=") + 6;
-        int strEnd = default_url.indexOf("&", strStart);
-        String url = default_url.substring(0, strStart) + String.format("%f%%2C%f%%3B%f%%2C%f", start_y, start_x, end_y, end_x) + default_url.substring(strEnd);
+        String url = default_url.substring(0, strStart) + String.format("%f%%2C%f%%3B%f%%2C%f", start_y, start_x, end_y, end_x);
         Log.d("map", url);
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -391,7 +390,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 // we are inside the bounds -> download layer
                 String wmsUrl = sharedPreference.getValue("base_map_url") +
                         Double.toString(bounds[0]) + "," + Double.toString(bounds[1]) + "," + Double.toString(bounds[2]) + ","
-                        + Double.toString(bounds[3]) + "&WIDTH=" + dimensions[0] + "&HEIGHT=" + dimensions[1] + "&Layers=Uebersichtsplan";
+                        + Double.toString(bounds[3]) + "&WIDTH=" + dimensions[0] + "&HEIGHT=" + dimensions[1] + "&Layers=Stadtplan";
 
                 URL url = null;
                 try {

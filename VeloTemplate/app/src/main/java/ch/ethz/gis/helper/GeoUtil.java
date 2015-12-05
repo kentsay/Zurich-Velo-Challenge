@@ -47,8 +47,9 @@ public class GeoUtil {
             for(int j = 0; j < innerArray.length(); j++)
                 point[j] = innerArray.getDouble(j);
 
-            double[] coord = CoordinatesUtil.LV03toWGS84(point[0], point[1], point[2]);
-            coordinate.add(new LatLng(coord[0], coord[1]));
+            //double[] coord = CoordinatesUtil.LV03toWGS84(point[0], point[1], point[2]);
+            //coordinate.add(new LatLng(coord[0], coord[1]));
+            coordinate.add(new LatLng(point[1], point[0]));
         }
 
         //customise the linestring style for a GeoJsonFeature
