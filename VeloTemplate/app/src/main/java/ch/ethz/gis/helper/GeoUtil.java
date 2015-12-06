@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.location.Location;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.geojson.GeoJsonFeature;
 import com.google.maps.android.geojson.GeoJsonLayer;
@@ -19,6 +21,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ch.ethz.gis.velotemplate.R;
 
 public class GeoUtil {
 
@@ -57,39 +61,38 @@ public class GeoUtil {
         GeoJsonLineString line = new GeoJsonLineString(coordinate);
         GeoJsonFeature routeFeature = new GeoJsonFeature(line, null, null, null);
         GeoJsonLineStringStyle lineStringStyle = new GeoJsonLineStringStyle();
-        lineStringStyle.setColor(Color.RED);
+        lineStringStyle.setColor(Color.GREEN);
+        lineStringStyle.setWidth(20);
         routeFeature.setLineStringStyle(lineStringStyle);
         layer.addFeature(routeFeature);
 
-        // ====== Remove the comment to test the result of createPathFromCompressedGeometry() ======
         // Show the 2nd routing instruction on the map
 
-//        String cg = json.getJSONArray("directions").
-//                getJSONObject(0).
-//                getJSONArray("features").
-//                getJSONObject(2).
-//                getString("compressedGeometry");
-//        GeoJsonLineString cgline = createPathFromCompressedGeometry(cg);
-//        GeoJsonFeature cgFeature = new GeoJsonFeature(cgline, null, null, null);
-//        GeoJsonLineStringStyle cglineStringStyle = new GeoJsonLineStringStyle();
-//        cglineStringStyle.setColor(Color.YELLOW);
-//        cgFeature.setLineStringStyle(cglineStringStyle);
-//        layer.addFeature(cgFeature);
-//
-//        String instruction = json.getJSONArray("directions").
-//                getJSONObject(0).
-//                getJSONArray("features").
-//                getJSONObject(2).
-//                getJSONObject("attributes").
-//                getString("text");
-//        GeoJsonPoint endPoint = new GeoJsonPoint(cgline.getCoordinates().get(0));
-//        GeoJsonFeature epFeature = new GeoJsonFeature(endPoint, null, null, null);
-//        GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
-//        pointStyle.setTitle(instruction);
-//        epFeature.setPointStyle(pointStyle);
-//        layer.addFeature(epFeature);
+        JSONArray features = json.getJSONArray("directions").
+                getJSONObject(0).
+                getJSONArray("features");
 
-        // ======================================================
+        for (int i = 0; i < features.length(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            String cg = feature.getString("compressedGeometry");
+            String instruction = feature.getJSONObject("attributes").getString("text");
+
+            GeoJsonLineString cgline = createPathFromCompressedGeometry(cg);
+//            GeoJsonFeature cgFeature = new GeoJsonFeature(cgline, null, null, null);
+//            GeoJsonLineStringStyle cglineStringStyle = new GeoJsonLineStringStyle();
+//            cglineStringStyle.setColor(Color.RED);
+//            cgFeature.setLineStringStyle(cglineStringStyle);
+//            layer.addFeature(cgFeature);
+
+            GeoJsonPoint endPoint = new GeoJsonPoint(cgline.getCoordinates().get(0));
+            GeoJsonFeature epFeature = new GeoJsonFeature(endPoint, null, null, null);
+            GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
+            pointStyle.setTitle(instruction);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_flag);
+            pointStyle.setIcon(icon);
+            epFeature.setPointStyle(pointStyle);
+            layer.addFeature(epFeature);
+        }
 
         return layer;
     }

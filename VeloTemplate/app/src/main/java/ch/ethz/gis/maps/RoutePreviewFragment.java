@@ -166,7 +166,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         };
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -231,10 +230,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             public void onClick(DialogInterface dialog, int which) {
                 // switch statement for the entries. Just take care of the entries, if you changed them above
                 if (which == 0) {
-                    // To the closest rental station
                     navToStation();
                 } else if(which == 1) {
-                        // Navigation on the route
+                    navToRoute();
                     /**
                      *  Some steps about the routing service
                      *  Pre-process:
@@ -257,24 +255,19 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                      *  3. (not sure) LocationListener will keep updating. When user is approaching some specific checkpoint, the
                      *      dialog box will appears and show the next direction
                      */
-                    navToRoute();
                 }
-
             }
         });
         final AlertDialog dialog = builder.create();
         dialog.show();
         return true;
-
     }
 
     private boolean navToStation() {
-
         Location mylocation = GeoUtil.getCurrentLocation(mMap);
         // iterate through all rental stations to find the closest one to the current location
         double distance = Math.pow(10,10);
         LatLng bestStation = new LatLng(0,0);
-        // TODO: debug -> Rental layer is null...
         for (GeoJsonFeature feature : rentalLayer.getFeatures()) {
             // get the latitude/longitude of the rental station
             LatLng rentalLocation = ((GeoJsonPoint)feature.getGeometry()).getCoordinates();
@@ -327,6 +320,13 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         volleyLoadRoute(location[0], location[1], 681000, 246000);
     }
 
+    /**
+     * Call WMS routing service and display the route on map layer. The input parameters should all be in Swiss Coordinate format.
+     * @param start_y
+     * @param start_x
+     * @param end_y
+     * @param end_x
+     */
     private void volleyLoadRoute(double start_y, double start_x, double end_y, double end_x) {
         String default_url = sharedPreference.getValue("route_url");
         int strStart = default_url.indexOf("stops=") + 6;
