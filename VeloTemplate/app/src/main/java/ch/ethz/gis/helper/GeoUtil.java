@@ -3,6 +3,7 @@ package ch.ethz.gis.helper;
 
 import android.graphics.Color;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -103,6 +104,11 @@ public class GeoUtil {
 
     public static LatLng getCurrentLocation(GoogleMap mMap) {
         Location location = mMap.getMyLocation();
+        if(location == null){
+            // To prevent the emulator from crashing...
+            Log.d("GeoUtil", "Location service not available");
+            return new LatLng(47.408, 8.507);
+        }
         return new LatLng(location.getLatitude(), location.getLongitude());
     }
     public static GeoJsonLineString createPathFromCompressedGeometry(String cgString) {

@@ -121,7 +121,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // Set up the location listener
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(GeoUtil.getCurrentLocation(mMap)));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
             }
             public void onStatusChanged(String provider, int status, Bundle extras) {}
             public void onProviderEnabled(String provider) {}
@@ -306,8 +306,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     }
 
     private void navToRoute() {
-        Location mylocation = mMap.getMyLocation();
-        double[] location = CoordinatesUtil.WGS84toLV03(mylocation.getLatitude(), mylocation.getLongitude(), 0);
+        LatLng mylocation = GeoUtil.getCurrentLocation(mMap);
+        double[] location = CoordinatesUtil.WGS84toLV03(mylocation.latitude, mylocation.longitude, 0);
         double[] destination = CoordinatesUtil.WGS84toLV03(routeStartPoint.latitude, routeStartPoint.longitude, 0);
         volleyLoadRoute(location[0], location[1], destination[0], destination[1]);
     }
