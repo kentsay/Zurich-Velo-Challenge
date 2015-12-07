@@ -74,7 +74,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private LatLngBounds mapBounds;
     private int [] dimensions = new int[2];
 
-    private Location currentLocation;
     private LatLng beginLatLog;
     private LatLng routeStartPoint;
     private String kmlUrl = "";
@@ -111,6 +110,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         setProjection(tempProjection);
         mMap.setOnCameraChangeListener(getCameraChangeListener());
         mMap.setMyLocationEnabled(true);
+
         String[] wmsurlsTest = {kmlUrl};
         loadKML loadKMLThread = new loadKML();
         loadKMLThread.execute(wmsurlsTest);
@@ -118,8 +118,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // Set up the location listener
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(GeoUtil.getCurrentLocation(mMap)));
             }
             public void onStatusChanged(String provider, int status, Bundle extras) {}
             public void onProviderEnabled(String provider) {}
@@ -267,24 +266,18 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // iterate through all rental stations to find the closest one to the current location
         double distance = Math.pow(10,10);
         LatLng bestStation = new LatLng(0,0);
-        currentLocation = GeoUtil.getCurrentLocation(mMap);
         for (GeoJsonFeature feature : rentalLayer.getFeatures()) {
             LatLng rentalLocation = ((GeoJsonPoint)feature.getGeometry()).getCoordinates();
 
-            // calculate the distance
-            Log.d("rentalStation",rentalLocation.latitude + " " + rentalLocation.longitude);
-            Log.d("Location", currentLocation.getLatitude() + " " + currentLocation.getLongitude());
-            double tempdistance = Math.sqrt((Math.pow(currentLocation.getLatitude()-rentalLocation.latitude,2)+ Math.pow(currentLocation.getLongitude()-rentalLocation.longitude,2)));
-            Log.d("Dist Loc-RentalStation", Double.toString(distance));
-
+            double tempdistance = GeoUtil.getDistance(GeoUtil.getCurrentLocation(mMap), rentalLocation);
             if (tempdistance < distance) {
                 bestStation = new LatLng(rentalLocation.latitude,rentalLocation.longitude);
                 distance = tempdistance;
             }
         }
 
-        double[] locationSwiss = CoordinatesUtil.WGS84toLV03(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude());
-        double [] rentalStationSwiss = new double[2];
+        double[] locationSwiss = CoordinatesUtil.WGS84toLV03(GeoUtil.getCurrentLocation(mMap).latitude,GeoUtil.getCurrentLocation(mMap).longitude,0);
+        double[] rentalStationSwiss = new double[2];
         rentalStationSwiss[0] = CoordinatesUtil.WGStoCHy(bestStation.latitude, bestStation.longitude);
         rentalStationSwiss[1] = CoordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
         volleyLoadRoute(locationSwiss[0], locationSwiss[1], rentalStationSwiss[0], rentalStationSwiss[1]);
@@ -469,7 +462,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             KmlPlacemark placemark = container.getPlacemarks().iterator().next();
             //Retrieve a polygon object in a placemark
             KmlLineString lineString = (KmlLineString) placemark.getGeometry();
-            routeStartPoint = extractNearestPointFromRoute(lineString);
+            routeStartPoint = extractNearestPointFromRoute(GeoUtil.getCurrentLocation(mMap), lineString);
             //Create LatLngBounds of the outer coordinates of the polygon
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             for (LatLng latLng : lineString.getGeometryObject()) {
@@ -487,12 +480,14 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         }
     }
 
-    private LatLng extractNearestPointFromRoute(KmlLineString lineString) {
-        //TODO: calculate start point or end point is closer to your current location
+    private LatLng extractNearestPointFromRoute(LatLng currentlocation, KmlLineString lineString) {
         int len = lineString.getGeometryObject().size()-1;
-        LatLng startPt = new LatLng(lineString.getGeometryObject().get(0).latitude, lineString.getGeometryObject().get(0).longitude);
-        LatLng endPt   = new LatLng(lineString.getGeometryObject().get(len).latitude, lineString.getGeometryObject().get(len).longitude);
+        LatLng start = new LatLng(lineString.getGeometryObject().get(0).latitude, lineString.getGeometryObject().get(0).longitude);
+        LatLng end   = new LatLng(lineString.getGeometryObject().get(len).latitude, lineString.getGeometryObject().get(len).longitude);
 
-        return endPt;
+        if (GeoUtil.getDistance(currentlocation, start) > GeoUtil.getDistance(currentlocation, end))
+            return end;
+        else
+            return start;
     }
 }

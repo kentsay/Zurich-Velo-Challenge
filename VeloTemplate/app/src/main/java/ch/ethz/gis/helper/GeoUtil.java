@@ -52,8 +52,6 @@ public class GeoUtil {
             for(int j = 0; j < innerArray.length(); j++)
                 point[j] = innerArray.getDouble(j);
 
-            //double[] coord = CoordinatesUtil.LV03toWGS84(point[0], point[1], point[2]);
-            //coordinate.add(new LatLng(coord[0], coord[1]));
             coordinate.add(new LatLng(point[1], point[0]));
         }
 
@@ -67,7 +65,6 @@ public class GeoUtil {
         layer.addFeature(routeFeature);
 
         // Show the 2nd routing instruction on the map
-
         JSONArray features = json.getJSONArray("directions").
                 getJSONObject(0).
                 getJSONArray("features");
@@ -78,12 +75,6 @@ public class GeoUtil {
             String instruction = feature.getJSONObject("attributes").getString("text");
 
             GeoJsonLineString cgline = createPathFromCompressedGeometry(cg);
-//            GeoJsonFeature cgFeature = new GeoJsonFeature(cgline, null, null, null);
-//            GeoJsonLineStringStyle cglineStringStyle = new GeoJsonLineStringStyle();
-//            cglineStringStyle.setColor(Color.RED);
-//            cgFeature.setLineStringStyle(cglineStringStyle);
-//            layer.addFeature(cgFeature);
-
             GeoJsonPoint endPoint = new GeoJsonPoint(cgline.getCoordinates().get(0));
             GeoJsonFeature epFeature = new GeoJsonFeature(endPoint, null, null, null);
             GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
@@ -110,9 +101,9 @@ public class GeoUtil {
         return mLayer;
     }
 
-    public static Location getCurrentLocation(GoogleMap mMap) {
+    public static LatLng getCurrentLocation(GoogleMap mMap) {
         Location location = mMap.getMyLocation();
-        return location;
+        return new LatLng(location.getLatitude(), location.getLongitude());
     }
     public static GeoJsonLineString createPathFromCompressedGeometry(String cgString) {
         // Modified from https://www.arcgis.com/home/item.html?id=feb080c524f84afebd49725d083b56ae
@@ -206,6 +197,10 @@ public class GeoUtil {
         String sr32 = cgString.substring(index[0], i);
         index[0] = i;
         return Integer.parseInt(sr32.replace("+", ""), 32);
+    }
 
+    public static double getDistance(LatLng start, LatLng end) {
+        double distance = Math.sqrt((Math.pow(start.latitude - end.latitude,2)+ Math.pow(start.longitude - end.longitude,2)));
+        return distance;
     }
 }
