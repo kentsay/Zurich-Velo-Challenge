@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationListener;
@@ -39,6 +40,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.geojson.GeoJsonFeature;
 import com.google.maps.android.geojson.GeoJsonLayer;
+import com.google.maps.android.geojson.GeoJsonLineString;
+import com.google.maps.android.geojson.GeoJsonLineStringStyle;
 import com.google.maps.android.geojson.GeoJsonPoint;
 import com.google.maps.android.kml.KmlContainer;
 import com.google.maps.android.kml.KmlLayer;
@@ -54,6 +57,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
+import java.util.List;
 
 import ch.ethz.gis.helper.CoordinatesUtil;
 import ch.ethz.gis.helper.GeoUtil;
@@ -84,8 +88,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private MenuItem fav;
     private MenuItem unfav;
     private Context context;
-    private GeoJsonLayer routingLayer;
-    private GeoJsonLayer rentalLayer;
+    private GeoJsonLayer baseLayer, routingLayer, rentalLayer;
     private LocationListener locationListener;
     private LocationManager locationManager;
 
@@ -456,13 +459,19 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
         @Override
         protected void onPostExecute(KmlLayer kmlLayer) {
-            // Iterate through the KML file to find its extend (bounds)
+            JSONObject geoJson = new JSONObject();
+            try {
+                geoJson.put("type", "Feature");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            baseLayer = new GeoJsonLayer(mMap, geoJson);
+
             KmlContainer container = kmlLayer.getContainers().iterator().next();
-            //Retrieve the first placemark in the nested container
             KmlPlacemark placemark = container.getPlacemarks().iterator().next();
-            //Retrieve a polygon object in a placemark
             KmlLineString lineString = (KmlLineString) placemark.getGeometry();
             routeStartPoint = extractNearestPointFromRoute(GeoUtil.getCurrentLocation(mMap), lineString);
+
             //Create LatLngBounds of the outer coordinates of the polygon
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             for (LatLng latLng : lineString.getGeometryObject()) {
@@ -470,13 +479,16 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             }
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 2));
 
-            try {
-                kmlLayer.addLayerToMap();
-            } catch (IOException e) {
-                Log.e("KMLLoader:AddLayerIO" , e.getMessage());
-            } catch(XmlPullParserException e) {
-                Log.e("KMLLoader:AddLayerXML" , e.getMessage());
-            }
+            //Change route style by creating a new layer
+            List<LatLng> coordinate = lineString.getGeometryObject();
+            GeoJsonLineString line = new GeoJsonLineString(coordinate);
+            GeoJsonFeature routeFeature = new GeoJsonFeature(line, null, null, null);
+            GeoJsonLineStringStyle lineStringStyle = new GeoJsonLineStringStyle();
+            lineStringStyle.setColor(Color.rgb(0, 146, 255));
+            lineStringStyle.setWidth(20);
+            routeFeature.setLineStringStyle(lineStringStyle);
+            baseLayer.addFeature(routeFeature);
+            baseLayer.addLayerToMap();
         }
     }
 
