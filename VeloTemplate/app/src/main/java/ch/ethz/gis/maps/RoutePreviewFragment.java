@@ -75,7 +75,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private static int [] dimensions = new int[2];
 
     //init location for centre Zurich
-    private LatLng  poslatlong = new LatLng(47.375806, 8.528130);
+    private LatLng poslatlong = new LatLng(47.375806, 8.528130);
+    private LatLng routeStartPoint;
     private String kmlUrl = "";
 
     private SharedPreference sharedPreference;
@@ -316,8 +317,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private void navToRoute() {
         Location mylocation = mMap.getMyLocation();
         double[] location = CoordinatesUtil.WGS84toLV03(mylocation.getLatitude(), mylocation.getLongitude(), 0);
+        double[] destination = CoordinatesUtil.WGS84toLV03(routeStartPoint.latitude, routeStartPoint.longitude, 0);
         //TODO: find route start point
-        volleyLoadRoute(location[0], location[1], 681000, 246000);
+        volleyLoadRoute(location[0], location[1], destination[0], destination[1]);
     }
 
     /**
@@ -475,6 +477,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             KmlPlacemark placemark = container.getPlacemarks().iterator().next();
             //Retrieve a polygon object in a placemark
             KmlLineString lineString = (KmlLineString) placemark.getGeometry();
+            routeStartPoint = extractNearestPointFromRoute(lineString);
             //Create LatLngBounds of the outer coordinates of the polygon
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             for (LatLng latLng : lineString.getGeometryObject()) {
@@ -491,5 +494,14 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 Log.e("KMLLoader:AddLayerXML" , e.getMessage());
             }
         }
+    }
+
+    private LatLng extractNearestPointFromRoute(KmlLineString lineString) {
+        //TODO: calculate start point or end point is closer to your current location
+        int len = lineString.getGeometryObject().size()-1;
+        LatLng startPt = new LatLng(lineString.getGeometryObject().get(0).latitude, lineString.getGeometryObject().get(0).longitude);
+        LatLng endPt   = new LatLng(lineString.getGeometryObject().get(len).latitude, lineString.getGeometryObject().get(len).longitude);
+
+        return endPt;
     }
 }
