@@ -61,7 +61,7 @@ public class GeoUtil {
         GeoJsonLineString line = new GeoJsonLineString(coordinate);
         GeoJsonFeature routeFeature = new GeoJsonFeature(line, null, null, null);
         GeoJsonLineStringStyle lineStringStyle = new GeoJsonLineStringStyle();
-        lineStringStyle.setColor(Color.GREEN);
+        lineStringStyle.setColor(Color.MAGENTA);
         lineStringStyle.setWidth(20);
         routeFeature.setLineStringStyle(lineStringStyle);
         layer.addFeature(routeFeature);

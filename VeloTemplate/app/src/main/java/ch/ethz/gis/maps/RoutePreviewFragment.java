@@ -70,17 +70,17 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
     public GoogleMap mMap;
     public LinkedList<GroundOverlay> allOverlays = new LinkedList<>();
-    private static Projection projection;
-    private static LatLngBounds mapBounds;
-    private static int [] dimensions = new int[2];
+    private Projection projection;
+    private LatLngBounds mapBounds;
+    private int [] dimensions = new int[2];
 
-    //init location for centre Zurich
-    private LatLng poslatlong = new LatLng(47.375806, 8.528130);
+    private Location currentLocation;
+    private LatLng beginLatLog;
     private LatLng routeStartPoint;
     private String kmlUrl = "";
 
     private SharedPreference sharedPreference;
-    private VeloDbHelper dbHelper = VeloDbHelper.getInstance(this);
+    private VeloDbHelper dbHelper;
     private VeloRoute route;
     private MenuItem fav;
     private MenuItem unfav;
@@ -90,50 +90,23 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private LocationListener locationListener;
     private LocationManager locationManager;
 
-    public static int[] getDimensions () {return dimensions;}
-    public static Projection getProjection(){ return projection;}
-    public static void setProjection(Projection nProjection) {projection = nProjection;}
-    public static void setMapBounds(LatLngBounds nMapBounds) {mapBounds = nMapBounds;}
+    public int[] getDimensions () {return dimensions;}
+    public Projection getProjection(){ return projection;}
+    public void setProjection(Projection nProjection) {projection = nProjection;}
+    public void setMapBounds(LatLngBounds nMapBounds) {mapBounds = nMapBounds;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_map);
-
-        context = getApplicationContext();
-        Intent i = getIntent();
-
-        // read the route data from previous activity
-        route  = (VeloRoute)i.getSerializableExtra(ID_EXTRA);
-        kmlUrl = route.getKml_url();
-
-
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        Display display = getWindowManager().getDefaultDisplay();
-        // define the necessary size of the map and create the corresponding URL
-        Point size = new Point();
-        display.getSize(size);
-        dimensions[0] = size.x; //width
-        dimensions[1] = size.y; //height
-
-        // Getting reference to the SupportMapFragment of activity_main.xml
-        SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-
-        // Getting GoogleMap object from the fragment
-        fm.getMapAsync(this);
-
-        //Shared Preference setting
-        sharedPreference = new SharedPreference(this);
-
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        // request the rental stations
-        getRentalLocation(getString(R.string.rental_station_json));
+        init();
     }
 
     @Override
     public void onMapReady(GoogleMap nMap) {
         mMap = nMap;
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(poslatlong, 8));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(beginLatLog, 8));
         Projection  tempProjection = mMap.getProjection();
         setProjection(tempProjection);
         mMap.setOnCameraChangeListener(getCameraChangeListener());
@@ -206,21 +179,48 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 dbHelper.deleteFromFavourite(route.getId());
                 return true;
             case R.id.navigation:
-                // if the navigation is clicked
+                //open navigation menu
                 openNavigation();
-
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void init() {
+        context = getApplicationContext();
+        dbHelper = VeloDbHelper.getInstance(this);
+
+        //init location for centre Zurich
+        beginLatLog = new LatLng(47.375806, 8.528130);
+
+        // read the route data from previous activity
+        Intent i = getIntent();
+        route  = (VeloRoute)i.getSerializableExtra(ID_EXTRA);
+        kmlUrl = route.getKml_url();
+
+        //Shared Preference setting
+        sharedPreference = new SharedPreference(this);
+
+        //Location manager init
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        //Request the rental stations
+        getRentalLocation(getString(R.string.rental_station_json));
+
+        // define the necessary size of the map and create the corresponding URL
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        dimensions[0] = size.x; //width
+        dimensions[1] = size.y; //height
+
+        // Getting reference to the SupportMapFragment of activity_main.xml
+        SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        fm.getMapAsync(this);
+    }
+
 
     public boolean openNavigation() {
-
-        // This function does open the PopUp Menu to select different routing services
-        // e.g. routing to the next pumping station, routing along the route, etc.
         final String [] options = new String [] {"To the next rental station", "Start navigation on route"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, options);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -229,7 +229,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                // switch statement for the entries. Just take care of the entries, if you changed them above
                 if (which == 0) {
                     navToStation();
                 } else if(which == 1) {
@@ -265,33 +264,29 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     }
 
     private boolean navToStation() {
-        Location mylocation = GeoUtil.getCurrentLocation(mMap);
         // iterate through all rental stations to find the closest one to the current location
         double distance = Math.pow(10,10);
         LatLng bestStation = new LatLng(0,0);
+        currentLocation = GeoUtil.getCurrentLocation(mMap);
         for (GeoJsonFeature feature : rentalLayer.getFeatures()) {
-            // get the latitude/longitude of the rental station
             LatLng rentalLocation = ((GeoJsonPoint)feature.getGeometry()).getCoordinates();
+
             // calculate the distance
             Log.d("rentalStation",rentalLocation.latitude + " " + rentalLocation.longitude);
-            Log.d("Location", mylocation.getLatitude() + " " + mylocation.getLongitude());
-
-            double tempdistance = Math.sqrt((Math.pow(mylocation.getLatitude()-rentalLocation.latitude,2)+ Math.pow(mylocation.getLongitude()-rentalLocation.longitude,2)));
+            Log.d("Location", currentLocation.getLatitude() + " " + currentLocation.getLongitude());
+            double tempdistance = Math.sqrt((Math.pow(currentLocation.getLatitude()-rentalLocation.latitude,2)+ Math.pow(currentLocation.getLongitude()-rentalLocation.longitude,2)));
             Log.d("Dist Loc-RentalStation", Double.toString(distance));
-            // check distance
+
             if (tempdistance < distance) {
-                // distance to this rental station is shorter...
                 bestStation = new LatLng(rentalLocation.latitude,rentalLocation.longitude);
                 distance = tempdistance;
             }
         }
 
-        // Transform the coordinates to swiss coordinate System CH1903
-        double[] locationSwiss = CoordinatesUtil.WGS84toLV03(mylocation.getLatitude(),mylocation.getLongitude(),mylocation.getAltitude());
+        double[] locationSwiss = CoordinatesUtil.WGS84toLV03(currentLocation.getLatitude(),currentLocation.getLongitude(),currentLocation.getAltitude());
         double [] rentalStationSwiss = new double[2];
         rentalStationSwiss[0] = CoordinatesUtil.WGStoCHy(bestStation.latitude, bestStation.longitude);
         rentalStationSwiss[1] = CoordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
-        // query the routing service to navigate from current location to the closest rental station
         volleyLoadRoute(locationSwiss[0], locationSwiss[1], rentalStationSwiss[0], rentalStationSwiss[1]);
 
         return true;
@@ -318,7 +313,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         Location mylocation = mMap.getMyLocation();
         double[] location = CoordinatesUtil.WGS84toLV03(mylocation.getLatitude(), mylocation.getLongitude(), 0);
         double[] destination = CoordinatesUtil.WGS84toLV03(routeStartPoint.latitude, routeStartPoint.longitude, 0);
-        //TODO: find route start point
         volleyLoadRoute(location[0], location[1], destination[0], destination[1]);
     }
 
@@ -362,8 +356,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
     public class loadBasemap extends AsyncTask<String, Void, Bitmap>{
 
-        private LatLngBounds mapBounds;
-
         @Override
         protected Bitmap doInBackground(String... urls) {
             // get all the necessary objects:
@@ -374,8 +366,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             LatLng ur = projection.fromScreenLocation(new Point(dimensions[0],0)); //northeast
             LatLng ll = projection.fromScreenLocation(new Point(0,dimensions[1])); //southwest
             // set the new mapBounds
-            RoutePreviewFragment.setMapBounds(new LatLngBounds(ll, ur)); // southwest, northwest
-            this.mapBounds = new LatLngBounds(ll,ur);
+            setMapBounds(new LatLngBounds(ll, ur)); // southwest, northwest
+            mapBounds = new LatLngBounds(ll,ur);
             // resolve the LatLngBounds to doubles
             double[] bounds = new double[4];
             bounds[0] = ll.latitude;
@@ -419,7 +411,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             if (bitmap != null) {
                 GroundOverlay newOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        .positionFromBounds(this.mapBounds));
+                        .positionFromBounds(mapBounds));
                 allOverlays.push(newOverlay);
                 //  if the total number of overlays is bigger than 3, the last is removed
                 if (allOverlays.size()> 3) {
@@ -485,7 +477,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             }
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 2));
 
-            // add the layer to the map
             try {
                 kmlLayer.addLayerToMap();
             } catch (IOException e) {
