@@ -4,48 +4,29 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:weightSum="1"
-    android:background="@drawable/background"
+    android:background="#000000"
     android:baselineAligned="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:paddingTop="10dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:weightSum="0.99">
 
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.4"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="10dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView"
-            android:src="@drawable/text"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_alignParentEnd="false"
-            android:layout_alignParentBottom="true"
-            android:adjustViewBounds="true"
-            android:alpha="0.8" />
-    </RelativeLayout>
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.33"
-        android:baselineAligned="false"
-        android:layout_marginTop="10dp">
+        android:baselineAligned="false">
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
-            android:alpha="0.75"
+            android:alpha="0.9"
             android:background="@drawable/round_square"
             android:layout_marginLeft="25dp"
             android:layout_marginTop="10dp"
@@ -53,28 +34,28 @@
             android:layout_marginBottom="5dp">
 
             <ImageButton
-                android:id="@+id/button1"
+                android:id="@+id/button5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/easy_100"
+                android:src="@drawable/favorite_100"
                 android:scaleType="center"
                 android:adjustViewBounds="true"
                 android:background="#ffffff"
                 android:layout_gravity="center"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="12dp" />
 
-            <ImageView
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/imgText1"
-                android:src="@drawable/easy_text"
-                android:layout_below="@+id/button1"
-                android:adjustViewBounds="false"
-                android:alpha="0.8"
-                android:layout_marginTop="-5dp"
-                android:layout_marginBottom="5dp" />
+                android:text="Favorite"
+                android:id="@+id/textView5"
+                android:layout_below="@+id/button5"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textAlignment="center"
+                android:typeface="serif"
+                android:textColor="#38464d" />
 
         </RelativeLayout>
 
@@ -87,50 +68,133 @@
             android:layout_marginRight="25dp"
             android:layout_marginBottom="5dp"
             android:background="@drawable/round_square"
-            android:alpha="0.75">
+            android:alpha="0.9">
+
+            <ImageButton
+                android:id="@+id/button6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#ffffff"
+                android:src="@drawable/rental_100"
+                android:scaleType="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rent a bike"
+                android:id="@+id/textView6"
+                android:layout_below="@+id/button6"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textAlignment="center"
+                android:typeface="serif"
+                android:textColor="#38464d" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.33"
+        android:baselineAligned="false">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:alpha="0.9"
+            android:background="@drawable/round_square"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp">
+
+            <ImageButton
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/easy_100"
+                android:scaleType="center"
+                android:adjustViewBounds="true"
+                android:background="#ffffff"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Easy"
+                android:id="@+id/textView1"
+                android:layout_below="@+id/button1"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textAlignment="center"
+                android:typeface="serif"
+                android:textColor="#38464d" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/round_square"
+            android:alpha="0.9">
 
             <ImageButton
                 android:id="@+id/button2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="#ffffff"
                 android:src="@drawable/mountain_100"
                 android:scaleType="center"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="12dp" />
 
-            <ImageView
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/imgText2"
-                android:src="@drawable/mountain_text"
+                android:text="Mountain"
+                android:id="@+id/textView2"
                 android:layout_below="@+id/button2"
-                android:alpha="0.8"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="-5dp" />
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textAlignment="center"
+                android:typeface="serif"
+                android:textColor="#38464d" />
 
         </RelativeLayout>
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.33"
-        android:weightSum="1">
+        android:baselineAligned="false">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.50"
             android:background="@drawable/round_square"
-            android:alpha="0.75"
+            android:alpha="0.9"
             android:layout_marginLeft="25dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="5dp">
 
             <ImageButton
                 android:id="@+id/button3"
@@ -139,20 +203,22 @@
                 android:text="Long-distance"
                 android:background="#ffffff"
                 android:layout_weight="0.50"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:src="@drawable/distant_100"
                 android:scaleType="center"
                 android:layout_centerHorizontal="true" />
 
-            <ImageView
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/imgText3"
+                android:text="Distant"
+                android:id="@+id/textView3"
                 android:layout_below="@+id/button3"
-                android:src="@drawable/distant_text"
-                android:alpha="0.8"
-                android:layout_marginTop="-5dp"
-                android:layout_marginBottom="5dp" />
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textAlignment="center"
+                android:typeface="serif"
+                android:textColor="#38464d" />
 
         </RelativeLayout>
 
@@ -161,32 +227,33 @@
             android:layout_height="match_parent"
             android:layout_weight="0.50"
             android:background="@drawable/round_square"
-            android:alpha="0.75"
+            android:alpha="0.9"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="25dp"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="5dp">
 
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/button4"
-                android:layout_weight="0.5"
                 android:background="#ffffff"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:src="@drawable/random_100"
                 android:scaleType="center"
                 android:layout_centerHorizontal="true" />
 
-            <ImageView
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/imgText4"
-                android:src="@drawable/random_text"
+                android:text="Random"
+                android:id="@+id/textView4"
                 android:layout_below="@+id/button4"
-                android:alpha="0.8"
-                android:layout_marginTop="-5dp"
-                android:layout_marginBottom="5dp" />
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textAlignment="center"
+                android:typeface="serif"
+                android:textColor="#38464d" />
 
         </RelativeLayout>
 

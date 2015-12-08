@@ -22,38 +22,55 @@ public class CategoryFragment extends Fragment implements View.OnClickListener{
         ImageButton medium = (ImageButton)rootView.findViewById(R.id.button2);
         ImageButton hard = (ImageButton)rootView.findViewById(R.id.button3);
         ImageButton random = (ImageButton)rootView.findViewById(R.id.button4);
+        ImageButton favorite = (ImageButton)rootView.findViewById(R.id.button5);
+        ImageButton rental = (ImageButton)rootView.findViewById(R.id.button6);
 
         easy.setOnClickListener(this);
         medium.setOnClickListener(this);
         hard.setOnClickListener(this);
         random.setOnClickListener(this);
+        favorite.setOnClickListener(this);
+        rental.setOnClickListener(this);
 
         return rootView;
     }
 
     @Override
     public void onClick(View v) {
-        ListFragment routeList = new VeloRouteListFragment();
+        Fragment fragment = null;
         switch (v.getId()) {
             case R.id.button1:
+                fragment = new VeloRouteListFragment();
                 args.putInt("distMax", 10);
                 args.putInt("elevMax", 20);
+                fragment.setArguments(args);
                 break;
             case R.id.button2:
+                fragment = new VeloRouteListFragment();
                 args.putInt("elevMin", 30);
+                fragment.setArguments(args);
                 break;
             case R.id.button3:
+                fragment = new VeloRouteListFragment();
                 args.putInt("distMin", 30);
+                fragment.setArguments(args);
                 break;
             case R.id.button4:
+                fragment = new VeloRouteListFragment();
                 args.putBoolean("random", true);
+                fragment.setArguments(args);
+                break;
+            case R.id.button5:
+                fragment = new FavouriteFragment();
+                break;
+            case R.id.button6:
+                fragment = new NearbyFragment();
                 break;
             default:
                 break;
         }
-        routeList.setArguments(args);
         this.getFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, routeList)
+                .replace(R.id.content_frame, fragment)
                 .addToBackStack(null)
                 .commit();
     }
