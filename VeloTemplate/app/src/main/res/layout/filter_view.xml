@@ -48,9 +48,12 @@
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:drawableStart="@drawable/velo_icon"
-            android:text="----------    Find    ----------"
+            android:text="Search"
             android:drawableEnd="@drawable/velo_icon"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
 
     </LinearLayout>
 

@@ -3,7 +3,9 @@ package ch.ethz.gis.velotemplate;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -53,4 +55,16 @@ public class FavouriteFragment extends ListFragment {
         setListAdapter(veloAdapter);
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_velo_home, null);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated (Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getListView().setDivider(null);
+        getListView().setDividerHeight(0);
+    }
 }

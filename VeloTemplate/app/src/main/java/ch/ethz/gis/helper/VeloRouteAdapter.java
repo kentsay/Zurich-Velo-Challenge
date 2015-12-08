@@ -67,7 +67,7 @@ public class VeloRouteAdapter extends BaseAdapter {
         // TODO: Replace the special symbols with other icons
         String distance = route.getRoute_distance() + " km";
         SpannableString ss1=  new SpannableString(distance);
-        ss1.setSpan(new RelativeSizeSpan(2f), 0, 2, 0); // set size
+        ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length() - 3, 0); // set size
         routeDistance.setText(ss1);
 
         routeInfo.setText("⇔︎ " + route.getRoute_distance() + " km\n");
