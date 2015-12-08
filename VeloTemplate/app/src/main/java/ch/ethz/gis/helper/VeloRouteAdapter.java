@@ -2,6 +2,10 @@ package ch.ethz.gis.helper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,12 +58,18 @@ public class VeloRouteAdapter extends BaseAdapter {
 
         TextView routeName = (TextView)convertView.findViewById(R.id.route_name);
         TextView routeInfo = (TextView)convertView.findViewById(R.id.route_info);
+        TextView routeDistance  = (TextView)convertView.findViewById(R.id.route_distance);
         ImageView routeSnapshot = (ImageView)convertView.findViewById(R.id.route_map);
 
         VeloRoute route = routeList.get(position);
 
         routeName.setText(route.getRoute_name());
         // TODO: Replace the special symbols with other icons
+        String distance = route.getRoute_distance() + " km";
+        SpannableString ss1=  new SpannableString(distance);
+        ss1.setSpan(new RelativeSizeSpan(2f), 0, 2, 0); // set size
+        routeDistance.setText(ss1);
+
         routeInfo.setText("⇔︎ " + route.getRoute_distance() + " km\n");
         // Display elevation only when the value is valid
         if(!route.getElevation().equals("-1"))

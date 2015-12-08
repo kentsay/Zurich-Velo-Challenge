@@ -32,28 +32,44 @@
             android:id="@+id/route_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_toRightOf="@+id/route_map"
             android:text="Route Name"
-            android:textSize="16sp"
-            android:textColor="#0d2845"
-            android:layout_toLeftOf="@+id/route_info"
+            android:textSize="11sp"
+            android:textColor="#289AF0"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"
             android:typeface="normal"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:layout_alignEnd="@+id/route_info" />
+
+        <TextView
+            android:id="@+id/route_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Route Information"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginRight="10dp"
+            android:textColor="#414C54"
+            android:textAlignment="textEnd"
+            android:typeface="monospace"
+            android:layout_alignStart="@+id/route_name"
+            android:layout_alignBottom="@+id/route_map" />
+
 
         <TextView
             android:id="@+id/route_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Route Information"
-            android:layout_alignTop="@+id/route_name"
-            android:layout_alignParentRight="true"
             android:textSize="14sp"
             android:layout_marginRight="10dp"
             android:textColor="#a0a0a0"
             android:textAlignment="textEnd"
-            android:typeface="monospace" />
+            android:typeface="monospace"
+            android:layout_alignTop="@+id/route_distance"
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 </FrameLayout>
