@@ -122,6 +122,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         setProjection(tempProjection);
         mMap.setOnCameraChangeListener(getCameraChangeListener());
         mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(true);
 
         String[] wmsurlsTest = {kmlUrl};
         loadKML loadKMLThread = new loadKML();
@@ -143,10 +144,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         return new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition camPos){
-                Projection newProjection = mMap.getProjection();
+                setProjection(mMap.getProjection());
                 loadBasemap loadBasemapThread = new loadBasemap();
                 loadBasemapThread.execute();
-                setProjection(newProjection);
             }
         };
     }
@@ -278,10 +278,11 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // iterate through all rental stations to find the closest one to the current location
         double distance = Math.pow(10,10);
         LatLng bestStation = new LatLng(0,0);
+        LatLng myLocation = GeoUtil.getCurrentLocation(mMap);
         for (GeoJsonFeature feature : rentalLayer.getFeatures()) {
             LatLng rentalLocation = ((GeoJsonPoint)feature.getGeometry()).getCoordinates();
 
-            double tempdistance = GeoUtil.getDistance(GeoUtil.getCurrentLocation(mMap), rentalLocation);
+            double tempdistance = GeoUtil.getDistance(myLocation, rentalLocation);
             if (tempdistance < distance) {
                 bestStation = new LatLng(rentalLocation.latitude,rentalLocation.longitude);
                 distance = tempdistance;
@@ -372,22 +373,14 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
         @Override
         protected Bitmap doInBackground(String... urls) {
-            // get all the necessary objects:
-            Projection projection = getProjection();
             int[] dimensions = getDimensions();
-
-            // Coordinate system of the display: origin upper-left, x right (width), y down (height)
-            LatLng ur = projection.fromScreenLocation(new Point(dimensions[0],0)); //northeast
-            LatLng ll = projection.fromScreenLocation(new Point(0,dimensions[1])); //southwest
-            // set the new mapBounds
-            setMapBounds(new LatLngBounds(ll, ur)); // southwest, northwest
-            mapBounds = new LatLngBounds(ll,ur);
+            setMapBounds(getProjection().getVisibleRegion().latLngBounds);
             // resolve the LatLngBounds to doubles
             double[] bounds = new double[4];
-            bounds[0] = ll.latitude;
-            bounds[1] = ll.longitude;
-            bounds[2] = ur.latitude;
-            bounds[3] = ur.longitude;
+            bounds[0] = mapBounds.southwest.latitude;
+            bounds[1] = mapBounds.southwest.longitude;
+            bounds[2] = mapBounds.northeast.latitude;
+            bounds[3] = mapBounds.northeast.longitude;
 
             /**
              * check if the wanted layer is outside of the queryable layer -> download not needed layer bounding box of opendata Zurich
