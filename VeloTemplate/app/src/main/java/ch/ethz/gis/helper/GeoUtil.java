@@ -89,6 +89,22 @@ public class GeoUtil {
         return layer;
     }
 
+    public static int extractSummary(JSONObject json, String key) throws JSONException {
+        int value = 0;
+        if (key.equals("totalLength")) {
+            value = json.getJSONArray("directions").
+                    getJSONObject(0).
+                    getJSONObject("summary").getInt("totalLength");
+            value = value / 1000;
+        } else if (key.equals("totalTime")) {
+            Double time = json.getJSONArray("directions").
+                    getJSONObject(0).
+                    getJSONObject("summary").getDouble("totalTime");
+            value = time.intValue();
+        }
+        return value;
+    }
+
     public static GeoJsonLayer addJsonFeature(GoogleMap mMap, JSONObject response) {
         GeoJsonLayer mLayer = new GeoJsonLayer(mMap, response);
         for (GeoJsonFeature feature : mLayer.getFeatures()) {

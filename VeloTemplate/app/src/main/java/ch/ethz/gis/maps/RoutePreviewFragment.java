@@ -20,7 +20,10 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -92,6 +95,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private LocationListener locationListener;
     private LocationManager locationManager;
 
+    private WebView myWebView;
+
     public int[] getDimensions () {return dimensions;}
     public Projection getProjection(){ return projection;}
     public void setProjection(Projection nProjection) {projection = nProjection;}
@@ -103,6 +108,10 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         setContentView(R.layout.activity_show_map);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         init();
+
+        // TODO: call elevation api and plot the altitude profile in the webview
+        //myWebView = (WebView) findViewById(R.id.map_elevation);
+        //myWebView.loadUrl("https://www.google.com.tw/?gws_rd=ssl");
     }
 
     @Override
@@ -306,6 +315,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     }
 
     private void navToRoute() {
+        //myWebView.setVisibility(View.GONE);
+
         LatLng mylocation = GeoUtil.getCurrentLocation(mMap);
         double[] location = CoordinatesUtil.WGS84toLV03(mylocation.latitude, mylocation.longitude, 0);
         double[] destination = CoordinatesUtil.WGS84toLV03(routeStartPoint.latitude, routeStartPoint.longitude, 0);
@@ -333,6 +344,13 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                         if (response != null) {
                             try {
                                 routingLayer = GeoUtil.convert(mMap, response);
+                                int totalLength = GeoUtil.extractSummary(response, "totalLength");
+                                int totalTime   = GeoUtil.extractSummary(response, "totalTime");
+
+                                //TODO: add summary in a better way instead of using toast
+                                Toast toast = Toast.makeText(context, totalTime + " min (" + totalLength+ " km)", Toast.LENGTH_LONG);
+                                toast.show();
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
