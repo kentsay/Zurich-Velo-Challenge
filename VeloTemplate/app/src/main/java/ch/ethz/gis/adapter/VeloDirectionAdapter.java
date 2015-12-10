@@ -19,9 +19,9 @@ public class VeloDirectionAdapter extends BaseAdapter {
     private final Context context;
     private final List<VeloDirection> directionList;
 
-    public VeloDirectionAdapter(Context context, List<VeloDirection> routeList) {
+    public VeloDirectionAdapter(Context context, List<VeloDirection> directionList) {
         this.context = context;
-        this.directionList = routeList;
+        this.directionList = directionList;
     }
 
     @Override
@@ -51,9 +51,10 @@ public class VeloDirectionAdapter extends BaseAdapter {
         TextView direction_summary = (TextView)convertView.findViewById(R.id.direction_summary);
         ImageView direction_icon   = (ImageView)convertView.findViewById(R.id.direction_indicator);
 
-        VeloDirection route = directionList.get(position);
+        VeloDirection direction = directionList.get(position);
 
-        //TODO: set direction info into view
+        direction_info.setText(direction.getText());
+        direction_summary.setText(direction.getLength() + "m(" + direction.getTime() + "m)");
 
         return convertView;
     }

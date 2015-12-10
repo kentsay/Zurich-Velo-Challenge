@@ -1,6 +1,7 @@
 package ch.ethz.gis.maps;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -68,6 +69,7 @@ import ch.ethz.gis.helper.SharedPreference;
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.velotemplate.R;
+import ch.ethz.gis.velotemplate.VeloDirectionListFragment;
 import ch.ethz.gis.velotemplate.VeloRoute;
 
 
@@ -324,6 +326,11 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         volleyLoadRoute(location[0], location[1], destination[0], destination[1]);
     }
 
+    private void showDirectionList() {
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.map, new VeloDirectionListFragment()).commit();
+    }
+
     /**
      * Call WMS routing service and display the route on map layer. The input parameters should all be in Swiss Coordinate format.
      * @param start_y
@@ -351,6 +358,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                                 //TODO: add summary in a better way instead of using toast
                                 Toast toast = Toast.makeText(context, totalTime + " min (" + totalLength+ " km)", Toast.LENGTH_LONG);
                                 toast.show();
+                                //showDirectionList();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();

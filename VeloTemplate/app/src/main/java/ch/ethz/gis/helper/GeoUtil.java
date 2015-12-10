@@ -23,9 +23,27 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.gis.databean.VeloDirection;
 import ch.ethz.gis.velotemplate.R;
 
 public class GeoUtil {
+
+    private static List<VeloDirection> veloDirectionList = new ArrayList<>();
+
+    public static void setVeloDirection(JSONObject json) throws JSONException {
+        if (json != null) {
+            VeloDirection direction = new VeloDirection();
+            direction.setLength(json.getDouble("length"));
+            direction.setTime(json.getDouble("time"));
+            direction.setText(json.getString("text"));
+            direction.setDirectionType(json.getString("maneuverType"));
+            veloDirectionList.add(direction);
+        }
+    }
+
+    public static List<VeloDirection> getVeloDirectionList() {
+            return veloDirectionList;
+    }
 
     public static GeoJsonLayer convert(GoogleMap mMap, JSONObject json) throws JSONException {
         GeoJsonLayer layer;
@@ -72,6 +90,8 @@ public class GeoUtil {
 
         for (int i = 0; i < features.length(); i++) {
             JSONObject feature = features.getJSONObject(i);
+            setVeloDirection(feature.optJSONObject("attributes"));
+
             String cg = feature.getString("compressedGeometry");
             String instruction = feature.getJSONObject("attributes").getString("text");
 
