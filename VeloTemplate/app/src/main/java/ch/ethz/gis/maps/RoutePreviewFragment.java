@@ -291,6 +291,10 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         rentalStationSwiss[0] = CoordinatesUtil.WGStoCHy(bestStation.latitude, bestStation.longitude);
         rentalStationSwiss[1] = CoordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
         volleyLoadRoute(locationSwiss[0], locationSwiss[1], rentalStationSwiss[0], rentalStationSwiss[1]);
+
+        Location destLoc = GeoUtil.LatLngToLocation(bestStation);
+        cameraLookFromTo(mMap, myLoc, destLoc);
+
         return true;
     }
 
@@ -315,6 +319,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         double[] location = CoordinatesUtil.WGS84toLV03(myLatLng.latitude, myLatLng.longitude, 0);
         double[] destination = CoordinatesUtil.WGS84toLV03(routeStartPoint.latitude, routeStartPoint.longitude, 0);
         volleyLoadRoute(location[0], location[1], destination[0], destination[1]);
+
+        Location destLoc = GeoUtil.LatLngToLocation(routeStartPoint);
+        cameraLookFromTo(mMap, myLoc, destLoc);
     }
 
     /**
@@ -337,6 +344,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                         Log.d("map", response.toString());
                         if (response != null) {
                             try {
+                                if(routingLayer != null)
+                                    routingLayer.removeLayerFromMap();
                                 routingLayer = GeoUtil.convert(mMap, response);
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -495,5 +504,15 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             return end;
         else
             return start;
+    }
+
+    private void cameraLookFromTo(GoogleMap map, Location start, Location dest){
+        CameraPosition camPos = new CameraPosition.Builder()
+                .target(GeoUtil.LocationToLatLng(start))
+                .zoom(14)
+                .bearing(start.bearingTo(dest))
+                .tilt(60)
+                .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(camPos));
     }
 }
