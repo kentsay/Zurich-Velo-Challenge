@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationListener;
@@ -38,10 +37,10 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.geojson.GeoJsonFeature;
 import com.google.maps.android.geojson.GeoJsonLayer;
 import com.google.maps.android.geojson.GeoJsonLineString;
-import com.google.maps.android.geojson.GeoJsonLineStringStyle;
 import com.google.maps.android.geojson.GeoJsonPoint;
 import com.google.maps.android.kml.KmlContainer;
 import com.google.maps.android.kml.KmlLayer;
@@ -91,6 +90,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private GeoJsonLayer baseLayer, routingLayer, rentalLayer;
     private LocationListener locationListener;
     private LocationManager locationManager;
+    private Location myLoc;
+    private LatLng myLatLng;
 
     public int[] getDimensions () {return dimensions;}
     public Projection getProjection(){ return projection;}
@@ -119,10 +120,16 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         loadKML loadKMLThread = new loadKML();
         loadKMLThread.execute(wmsurlsTest);
 
+        // Get initial location
+        myLoc = GeoUtil.getCurrentLocation(mMap);
+        myLatLng = GeoUtil.LocationToLatLng(myLoc);
+
         // Set up the location listener
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+                myLoc = location;
+                myLatLng = GeoUtil.LocationToLatLng(myLoc);
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(myLatLng));
             }
             public void onStatusChanged(String provider, int status, Bundle extras) {}
             public void onProviderEnabled(String provider) {}
@@ -170,14 +177,14 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 //reset action bar icon to show fav or unfav
                 fav.setVisible(false);
                 unfav.setVisible(true);
-                Toast.makeText(context, "Added to My Favourite", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Added to My Favorite", Toast.LENGTH_SHORT).show();
                 dbHelper.addFavouriteRoute(route);
                 return true;
             case R.id.action_bar_favorite_remove:
                 //reset action bar icon to show fav or unfav
                 unfav.setVisible(false);
                 fav.setVisible(true);
-                Toast.makeText(context, "Removed from My Favourite", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Removed from My Favorite", Toast.LENGTH_SHORT).show();
                 dbHelper.deleteFromFavourite(route.getId());
                 return true;
             case R.id.navigation:
@@ -269,23 +276,21 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // iterate through all rental stations to find the closest one to the current location
         double distance = Math.pow(10,10);
         LatLng bestStation = new LatLng(0,0);
-        LatLng myLocation = GeoUtil.getCurrentLocation(mMap);
         for (GeoJsonFeature feature : rentalLayer.getFeatures()) {
             LatLng rentalLocation = ((GeoJsonPoint)feature.getGeometry()).getCoordinates();
 
-            double tempdistance = GeoUtil.getDistance(myLocation, rentalLocation);
+            double tempdistance = GeoUtil.getDistance(myLatLng, rentalLocation);
             if (tempdistance < distance) {
                 bestStation = new LatLng(rentalLocation.latitude,rentalLocation.longitude);
                 distance = tempdistance;
             }
         }
 
-        double[] locationSwiss = CoordinatesUtil.WGS84toLV03(GeoUtil.getCurrentLocation(mMap).latitude,GeoUtil.getCurrentLocation(mMap).longitude,0);
+        double[] locationSwiss = CoordinatesUtil.WGS84toLV03(myLatLng.latitude, myLatLng.longitude,0);
         double[] rentalStationSwiss = new double[2];
         rentalStationSwiss[0] = CoordinatesUtil.WGStoCHy(bestStation.latitude, bestStation.longitude);
         rentalStationSwiss[1] = CoordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
         volleyLoadRoute(locationSwiss[0], locationSwiss[1], rentalStationSwiss[0], rentalStationSwiss[1]);
-
         return true;
     }
 
@@ -307,8 +312,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     }
 
     private void navToRoute() {
-        LatLng mylocation = GeoUtil.getCurrentLocation(mMap);
-        double[] location = CoordinatesUtil.WGS84toLV03(mylocation.latitude, mylocation.longitude, 0);
+        double[] location = CoordinatesUtil.WGS84toLV03(myLatLng.latitude, myLatLng.longitude, 0);
         double[] destination = CoordinatesUtil.WGS84toLV03(routeStartPoint.latitude, routeStartPoint.longitude, 0);
         volleyLoadRoute(location[0], location[1], destination[0], destination[1]);
     }
@@ -463,7 +467,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             KmlContainer container = kmlLayer.getContainers().iterator().next();
             KmlPlacemark placemark = container.getPlacemarks().iterator().next();
             KmlLineString lineString = (KmlLineString) placemark.getGeometry();
-            routeStartPoint = extractNearestPointFromRoute(GeoUtil.getCurrentLocation(mMap), lineString);
+            routeStartPoint = extractNearestPointFromRoute(GeoUtil.LocationToLatLng(myLoc), lineString);
 
             //Create LatLngBounds of the outer coordinates of the polygon
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -476,10 +480,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             List<LatLng> coordinate = lineString.getGeometryObject();
             GeoJsonLineString line = new GeoJsonLineString(coordinate);
             GeoJsonFeature routeFeature = new GeoJsonFeature(line, null, null, null);
-            GeoJsonLineStringStyle lineStringStyle = new GeoJsonLineStringStyle();
-            lineStringStyle.setColor(Color.rgb(0, 146, 255));
-            lineStringStyle.setWidth(20);
-            routeFeature.setLineStringStyle(lineStringStyle);
+            routeFeature.setLineStringStyle(GeoUtil.getLineStringStyle(GeoUtil.LineType.BIKE_ROUTE));
             baseLayer.addFeature(routeFeature);
             baseLayer.addLayerToMap();
         }

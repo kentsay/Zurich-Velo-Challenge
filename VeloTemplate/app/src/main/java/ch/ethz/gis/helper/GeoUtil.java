@@ -26,6 +26,30 @@ import java.util.List;
 import ch.ethz.gis.velotemplate.R;
 
 public class GeoUtil {
+    public enum LineType {BIKE_ROUTE, NAVIGATION};
+    private static GeoJsonLineStringStyle bikeRouteStyle;
+    private static GeoJsonLineStringStyle navStyle;
+
+    public static GeoJsonLineStringStyle getLineStringStyle(LineType lineType){
+        switch(lineType){
+            case BIKE_ROUTE:
+                if(bikeRouteStyle == null){
+                    bikeRouteStyle = new GeoJsonLineStringStyle();
+                    bikeRouteStyle.setColor(Color.rgb(0, 146, 255));
+                    bikeRouteStyle.setWidth(10);
+                }
+                return bikeRouteStyle;
+            case NAVIGATION:
+                if(navStyle == null){
+                    navStyle = new GeoJsonLineStringStyle();
+                    navStyle.setColor(Color.rgb(150, 52, 132));
+                    navStyle.setWidth(10);
+                }
+                return navStyle;
+            default:
+                return new GeoJsonLineStringStyle();
+        }
+    }
 
     public static GeoJsonLayer convert(GoogleMap mMap, JSONObject json) throws JSONException {
         GeoJsonLayer layer;
@@ -59,13 +83,9 @@ public class GeoUtil {
         //customise the linestring style for a GeoJsonFeature
         GeoJsonLineString line = new GeoJsonLineString(coordinate);
         GeoJsonFeature routeFeature = new GeoJsonFeature(line, null, null, null);
-        GeoJsonLineStringStyle lineStringStyle = new GeoJsonLineStringStyle();
-        lineStringStyle.setColor(Color.MAGENTA);
-        lineStringStyle.setWidth(20);
-        routeFeature.setLineStringStyle(lineStringStyle);
+        routeFeature.setLineStringStyle(getLineStringStyle(LineType.NAVIGATION));
         layer.addFeature(routeFeature);
 
-        // Show the 2nd routing instruction on the map
         JSONArray features = json.getJSONArray("directions").
                 getJSONObject(0).
                 getJSONArray("features");
@@ -80,7 +100,7 @@ public class GeoUtil {
             GeoJsonFeature epFeature = new GeoJsonFeature(endPoint, null, null, null);
             GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
             pointStyle.setTitle(instruction);
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_flag);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_red_pin);
             pointStyle.setIcon(icon);
             epFeature.setPointStyle(pointStyle);
             layer.addFeature(epFeature);
@@ -102,15 +122,37 @@ public class GeoUtil {
         return mLayer;
     }
 
-    public static LatLng getCurrentLocation(GoogleMap mMap) {
+    public static LatLng LocationToLatLng(Location location) {
+        if(location != null)
+            return new LatLng(location.getLatitude(), location.getLongitude());
+        else
+            return null;
+    }
+
+    public static Location LatLngToLocation(LatLng latLng) {
+        if(latLng != null) {
+            Location location = new Location("");
+            location.setLatitude(latLng.latitude);
+            location.setLongitude(latLng.longitude);
+            return location;
+        }
+        else
+            return null;
+    }
+
+    public static Location getCurrentLocation(GoogleMap mMap) {
         Location location = mMap.getMyLocation();
         if(location == null){
             // To prevent the emulator from crashing...
             Log.d("GeoUtil", "Location service not available");
-            return new LatLng(47.408, 8.507);
+            location = new Location("");
+            location.setLatitude(47.408);
+            location.setLongitude(8.507);
+            location.setBearing(90);
         }
-        return new LatLng(location.getLatitude(), location.getLongitude());
+        return location;
     }
+
     public static GeoJsonLineString createPathFromCompressedGeometry(String cgString) {
         // Modified from https://www.arcgis.com/home/item.html?id=feb080c524f84afebd49725d083b56ae
         // Decompress 'CompressedGeometry' string to GeoJsonLingString
