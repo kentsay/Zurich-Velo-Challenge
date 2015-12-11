@@ -267,10 +267,10 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
 
     public boolean openNavigation() {
-        final String [] options = new String [] {"To the next rental station", "Start navigation on route"};
+        final String [] options = new String [] {"To the nearest rental station", "To velo route"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, options);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select Routing");
+        builder.setTitle("Start Navigation");
 
         builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
 

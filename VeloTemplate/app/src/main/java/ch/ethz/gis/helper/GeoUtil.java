@@ -28,7 +28,7 @@ import ch.ethz.gis.velotemplate.R;
 
 public class GeoUtil {
 
-    private static List<VeloDirection> veloDirectionList = new ArrayList<>();
+    private static List<VeloDirection> veloDirectionList;
 
     public static void setVeloDirection(JSONObject json) throws JSONException {
         if (json != null) {
@@ -87,6 +87,9 @@ public class GeoUtil {
         JSONArray features = json.getJSONArray("directions").
                 getJSONObject(0).
                 getJSONArray("features");
+
+        //reset veloDirectionList
+        veloDirectionList = new ArrayList<>();
 
         for (int i = 0; i < features.length(); i++) {
             JSONObject feature = features.getJSONObject(i);
