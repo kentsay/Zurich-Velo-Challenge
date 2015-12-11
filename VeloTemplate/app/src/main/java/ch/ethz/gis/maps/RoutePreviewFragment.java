@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,7 @@ import com.google.maps.android.kml.KmlContainer;
 import com.google.maps.android.kml.KmlLayer;
 import com.google.maps.android.kml.KmlLineString;
 import com.google.maps.android.kml.KmlPlacemark;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -99,6 +101,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private LocationManager locationManager;
 
     private WebView myWebView;
+    private SlidingUpPanelLayout slidingLayout;
 
     public int[] getDimensions () {return dimensions;}
     public Projection getProjection(){ return projection;}
@@ -116,6 +119,30 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // TODO: call elevation api and plot the altitude profile in the webview
         //myWebView = (WebView) findViewById(R.id.map_elevation);
         //myWebView.loadUrl("https://www.google.com.tw/?gws_rd=ssl");
+    }
+
+    private SlidingUpPanelLayout.PanelSlideListener onSlideListener() {
+        return new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View view, float v) {
+            }
+
+            @Override
+            public void onPanelCollapsed(View view) {
+            }
+
+            @Override
+            public void onPanelExpanded(View view) {
+            }
+
+            @Override
+            public void onPanelAnchored(View view) {
+            }
+
+            @Override
+            public void onPanelHidden(View view) {
+            }
+        };
     }
 
     @Override
@@ -232,6 +259,10 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // Getting reference to the SupportMapFragment of activity_main.xml
         SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         fm.getMapAsync(this);
+
+        //init sliding layout and hide in the beginning tail user start navigation
+        slidingLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
 
@@ -329,8 +360,9 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     }
 
     private void showDirectionList() {
+        slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.map, new VeloDirectionListFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.direction_box, new VeloDirectionListFragment()).commit();
     }
 
     /**
@@ -360,7 +392,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                                 //TODO: add summary in a better way instead of using toast
                                 Toast toast = Toast.makeText(context, totalTime + " min (" + totalLength+ " km)", Toast.LENGTH_LONG);
                                 toast.show();
-                                //showDirectionList();
+                                showDirectionList();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
