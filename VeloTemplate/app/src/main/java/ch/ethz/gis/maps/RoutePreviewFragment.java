@@ -10,8 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,6 +30,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -75,7 +78,7 @@ import ch.ethz.gis.velotemplate.VeloDirectionListFragment;
 import ch.ethz.gis.velotemplate.VeloRoute;
 
 
-public class RoutePreviewFragment extends AppCompatActivity implements OnMapReadyCallback {
+public class RoutePreviewFragment extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     public final static String ID_EXTRA = "ROUTE";
 
@@ -96,10 +99,15 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private MenuItem unfav;
     private Context context;
     private GeoJsonLayer baseLayer, routingLayer, rentalLayer;
-    private LocationListener locationListener;
-    private LocationManager locationManager;
     private Location myLoc;
     private LatLng myLatLng;
+
+    private GoogleApiClient mGoogleApiClient;
+    private static final LocationRequest mLocationRequest = LocationRequest.create()
+            .setInterval(5000)         // 5 seconds
+            .setFastestInterval(5000)
+            .setSmallestDisplacement(5) // 5 meters
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     private WebView myWebView;
     private SlidingUpPanelLayout slidingLayout;
@@ -120,6 +128,32 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // TODO: call elevation api and plot the altitude profile in the webview
         //myWebView = (WebView) findViewById(R.id.map_elevation);
         //myWebView.loadUrl("https://www.google.com.tw/?gws_rd=ssl");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
+            mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
+            mGoogleApiClient.disconnect();
     }
 
     private SlidingUpPanelLayout.PanelSlideListener onSlideListener() {
@@ -161,21 +195,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         loadKMLThread.execute(wmsurlsTest);
 
         // Get initial location
-        myLoc = GeoUtil.getCurrentLocation(mMap);
+        myLoc = GeoUtil.getCurrentLocation(mGoogleApiClient);
         myLatLng = GeoUtil.LocationToLatLng(myLoc);
-
-        // Set up the location listener
-        locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                myLoc = location;
-                myLatLng = GeoUtil.LocationToLatLng(myLoc);
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(myLatLng));
-            }
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
-            public void onProviderEnabled(String provider) {}
-            public void onProviderDisabled(String provider) {}
-        };
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
     public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
@@ -250,8 +271,12 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         //Shared Preference setting
         sharedPreference = new SharedPreference(this);
 
-        //Location manager init
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        // GoogleApiClient
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
 
         //Request the rental stations
         getRentalLocation(getString(R.string.rental_station_json));
@@ -573,5 +598,32 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 .tilt(60)
                 .build();
         map.animateCamera(CameraUpdateFactory.newCameraPosition(camPos));
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        myLoc = location;
+        myLatLng = GeoUtil.LocationToLatLng(myLoc);
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(myLatLng));
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.d("GoogleApiClient", "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.d("GoogleApiClient", "Connection suspended");
+        mGoogleApiClient.connect();
     }
 }

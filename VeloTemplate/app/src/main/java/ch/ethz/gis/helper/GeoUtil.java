@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -179,8 +181,8 @@ public class GeoUtil {
             return null;
     }
 
-    public static Location getCurrentLocation(GoogleMap mMap) {
-        Location location = mMap.getMyLocation();
+    public static Location getCurrentLocation(GoogleApiClient mGoogleApiClient) {
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient); //mMap.getMyLocation();
         if(location == null){
             // To prevent the emulator from crashing...
             Log.d("GeoUtil", "Location service not available");
