@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
@@ -109,6 +110,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_map);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         init();
 
         // TODO: call elevation api and plot the altitude profile in the webview
@@ -200,8 +202,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     }
 
     private void init() {
-        context = getApplicationContext();
         dbHelper = VeloDbHelper.getInstance(this);
+        context = getApplicationContext();
 
         //init location for centre Zurich
         beginLatLog = new LatLng(47.375806, 8.528130);

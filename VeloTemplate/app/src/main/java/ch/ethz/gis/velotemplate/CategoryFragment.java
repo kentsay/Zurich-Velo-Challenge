@@ -2,20 +2,25 @@ package ch.ethz.gis.velotemplate;
 
 import android.app.Fragment;
 import android.app.ListFragment;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 
 public class CategoryFragment extends Fragment implements View.OnClickListener{
     private Bundle args;
+    private Context context;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.category_view, container, false);
-
+        context = getActivity().getApplicationContext();
         args = new Bundle();
 
         ImageButton easy = (ImageButton)rootView.findViewById(R.id.button1);
@@ -64,14 +69,25 @@ public class CategoryFragment extends Fragment implements View.OnClickListener{
                 fragment = new FavouriteFragment();
                 break;
             case R.id.button6:
-                fragment = new NearbyFragment();
+                // check if internet is available, if yes -> continue
+                ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                if (cm.getActiveNetworkInfo() != null) {
+                    fragment = new NearbyFragment();
+                    Log.d("NetworkState", cm.getActiveNetworkInfo().toString());
+                } else {
+                    Toast.makeText(context, "No Internet connection! \n Please connect to the internet", Toast.LENGTH_SHORT).show();
+
+                }
                 break;
             default:
                 break;
         }
-        this.getFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .addToBackStack(null)
-                .commit();
+        if(fragment != null) {
+            this.getFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 }

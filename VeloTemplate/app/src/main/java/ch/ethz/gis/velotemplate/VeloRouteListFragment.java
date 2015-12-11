@@ -1,12 +1,17 @@
 package ch.ethz.gis.velotemplate;
 
 import android.app.ListFragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +27,7 @@ public class VeloRouteListFragment extends ListFragment {
     private VeloDbHelper dbHelper;
     private VeloRouteAdapter veloAdapter;
     private Bundle args;
+    private Context context;
     private int distMin;
     private int distMax;
     private int elevMin;
@@ -32,6 +38,7 @@ public class VeloRouteListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.initialize();
+        context = getActivity().getApplicationContext();
         // if args is not null means calling the fragment from filter, else it's from default
         if (args != null) {
             if (random)
@@ -62,7 +69,21 @@ public class VeloRouteListFragment extends ListFragment {
         VeloRoute route = veloAdapter.getVeloRoute(position);
         Intent routeInfo = new Intent(getActivity(), RoutePreviewFragment.class);
         routeInfo.putExtra(ID_EXTRA, route);
-        startActivity(routeInfo);
+
+        // check if internet is available, if yes -> continue
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (cm.getActiveNetworkInfo() != null) {
+
+            Log.d("NetworkState",cm.getActiveNetworkInfo().toString());
+            startActivity(routeInfo);
+        } else {
+            Toast.makeText(context, "No Internet connection! \n Please connect to the internet", Toast.LENGTH_SHORT).show();
+
+        }
+
+
+
     }
 
     private List<VeloRoute> getAllVeloRoutes()
