@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="#000000"
     android:baselineAligned="true"
     android:focusableInTouchMode="true"
     android:paddingTop="10dp"
