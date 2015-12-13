@@ -2,6 +2,7 @@ package ch.ethz.gis.maps;
 
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,6 +33,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -65,11 +70,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import ch.ethz.gis.databean.VeloDirection;
 import ch.ethz.gis.helper.CoordinatesUtil;
 import ch.ethz.gis.helper.GeoUtil;
+import ch.ethz.gis.helper.GeofenceTransitionsIntentService;
 import ch.ethz.gis.helper.SharedPreference;
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.helper.VolleyHelper;
@@ -102,6 +111,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private Location myLoc;
     private LatLng myLatLng;
 
+    private ArrayList<Geofence> mGeofenceList;
+    private PendingIntent mGeofencePendingIntent;
     private GoogleApiClient mGoogleApiClient;
     private static final LocationRequest mLocationRequest = LocationRequest.create()
             .setInterval(5000)         // 5 seconds
@@ -145,8 +156,10 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     @Override
     protected void onStop() {
         super.onStop();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            removeGeofencesFromService();
             mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -197,6 +210,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // Get initial location
         myLoc = GeoUtil.getCurrentLocation(mGoogleApiClient);
         myLatLng = GeoUtil.LocationToLatLng(myLoc);
+
     }
 
     public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
@@ -309,8 +323,20 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
                     navToStation();
-                } else if(which == 1) {
+                } else if (which == 1) {
                     navToRoute();
+
+                    /**
+                     * Make sure these 2 items are set in the device
+                     *     1. Google settings -> Location -> Mode -> High accuracy
+                     *     2. Dev settings -> Allow mock location
+                     * To test geofence on the emulator, paste the command below to terminal:
+                     *     echo 'pos={47.377,8.537,0} motion={10,0,0} turnrate=0 tzdiff=0' | nc ktrax-sim.kisstech.ch 48888 | nc localhost 5554
+                     */
+                    removeGeofencesFromService(); // clear the old geofences
+                    createGeofenceList();
+                    addGeofencesToService();
+
                     /**
                      *  Some steps about the routing service
                      *  Pre-process:
@@ -609,6 +635,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
     @Override
     public void onConnected(Bundle connectionHint) {
+        removeGeofencesFromService();
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
@@ -625,5 +652,93 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         // attempt to re-establish the connection.
         Log.d("GoogleApiClient", "Connection suspended");
         mGoogleApiClient.connect();
+    }
+
+    /* ============ Geofence-related functions ============ */
+
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (mGeofencePendingIntent != null) {
+            return mGeofencePendingIntent;
+        }
+        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+        // calling addGeofences() and removeGeofences().
+        return PendingIntent.getService(this, 0, intent, PendingIntent.
+                FLAG_UPDATE_CURRENT);
+    }
+
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(mGeofenceList);
+        return builder.build();
+    }
+
+    private void addGeofencesToService() {
+        try {
+            LocationServices.GeofencingApi.addGeofences(
+                    mGoogleApiClient,
+                    getGeofencingRequest(),
+                    getGeofencePendingIntent()
+            ).setResultCallback(new ResultCallback<Status>() {
+                @Override
+                public void onResult(Status status) {
+                }
+            });
+        } catch (SecurityException e) {
+            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
+            e.printStackTrace();
+        }
+    }
+
+    private void removeGeofencesFromService(){
+        try {
+            LocationServices.GeofencingApi.removeGeofences(
+                    mGoogleApiClient,
+                    // This is the same pending intent that was used in addGeofences().
+                    getGeofencePendingIntent()
+            ).setResultCallback(new ResultCallback<Status>() {
+                @Override
+                public void onResult(Status status) {
+                }
+            });
+        } catch (SecurityException e) {
+            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
+                e.printStackTrace();
+        }
+    }
+
+    private void createGeofenceList() {
+        List<VeloDirection> veloDirections = GeoUtil.getVeloDirectionList();
+        mGeofenceList = new ArrayList<Geofence>();
+
+        mGeofenceList.add(new Geofence.Builder()
+                // Set the request ID of the geofence. This is a string to identify this
+                // geofence.
+                .setRequestId("Enter Velostation HB Süd")  // Set an unique string as Id
+                .setCircularRegion(
+                        47.378,
+                        8.537,
+                        30              // radius = 30m
+                )
+                .setExpirationDuration(60 * 60 * 1000) // the geofence will expire after 1 hour
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                        Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build());
+        // TODO: Replace with the code below once getLatitude/getLongitude are implemented
+//        for (int i = 0; i < veloDirections.size(); i++) {
+//            VeloDirection direction = veloDirections.get(i);
+//            mGeofenceList.add(new Geofence.Builder()
+//                    .setRequestId(direction.getText())
+//                    .setCircularRegion(
+//                            direction.getLatitude(),
+//                            direction.getLongitude(),
+//                            10  // geofence radius = 10m
+//                    )
+//                    .setExpirationDuration(60 * 60 * 1000) // the geofence will expire after 1 hour
+//                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+//                    .build());
+//        }
     }
 }
