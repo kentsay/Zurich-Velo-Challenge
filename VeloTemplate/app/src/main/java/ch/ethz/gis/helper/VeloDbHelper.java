@@ -15,7 +15,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.gis.velotemplate.VeloRoute;
+import ch.ethz.gis.databean.VeloRoute;
 
 public class VeloDbHelper extends SQLiteOpenHelper {
 
