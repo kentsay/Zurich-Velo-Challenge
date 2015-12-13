@@ -15,8 +15,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.gis.databean.VeloRoute;
 import ch.ethz.gis.helper.VeloDbHelper;
-import ch.ethz.gis.helper.VeloRouteAdapter;
+import ch.ethz.gis.adapter.VeloRouteAdapter;
 import ch.ethz.gis.maps.RoutePreviewFragment;
 
 public class FavouriteFragment extends ListFragment {

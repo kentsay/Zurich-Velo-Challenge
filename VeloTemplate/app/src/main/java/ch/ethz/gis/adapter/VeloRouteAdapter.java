@@ -1,10 +1,8 @@
-package ch.ethz.gis.helper;
+package ch.ethz.gis.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,8 +18,9 @@ import com.android.volley.VolleyError;
 
 import java.util.List;
 
+import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.velotemplate.R;
-import ch.ethz.gis.velotemplate.VeloRoute;
+import ch.ethz.gis.databean.VeloRoute;
 
 public class VeloRouteAdapter extends BaseAdapter {
 
