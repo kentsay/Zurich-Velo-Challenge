@@ -30,6 +30,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -121,6 +122,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
     private WebView myWebView;
     private SlidingUpPanelLayout slidingLayout;
     private Button navigationBtn;
+    private CircularProgressView progressView;
 
     public int[] getDimensions () {return dimensions;}
     public Projection getProjection(){ return projection;}
@@ -318,6 +320,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                 slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             }
         });
+
+        progressView = (CircularProgressView) findViewById(R.id.progress_view);
     }
 
 
@@ -546,7 +550,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
         @Override
         protected KmlLayer doInBackground(String... kmlurls) {
-
             /** Fix the looper problem
                 The exception is thrown because you (or core Android code) has already called Looper.prepare()
                 for the current executing thread.
