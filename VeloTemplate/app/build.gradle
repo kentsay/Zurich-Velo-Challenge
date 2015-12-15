@@ -29,6 +29,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:8.1.0'
     compile 'com.google.android.gms:play-services-location:8.1.0'
     compile 'com.google.maps.android:android-maps-utils:0.4+'
+    compile 'com.github.rahatarmanahmed:circularprogressview:2.4.0'
     compile project(":volley")
 
 }
