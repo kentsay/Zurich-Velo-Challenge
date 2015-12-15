@@ -32,6 +32,8 @@ public class GeoUtil {
     public enum LineType {BIKE_ROUTE, NAVIGATION};
     private static GeoJsonLineStringStyle bikeRouteStyle;
     private static GeoJsonLineStringStyle navStyle;
+    private static List<VeloDirection> veloDirectionList;
+    private static List<LatLng> coordinateList;
 
     public static GeoJsonLineStringStyle getLineStringStyle(LineType lineType){
         switch(lineType){
@@ -54,8 +56,6 @@ public class GeoUtil {
         }
     }
 
-    private static List<VeloDirection> veloDirectionList;
-
     public static void setVeloDirection(JSONObject json) throws JSONException {
         if (json != null) {
             VeloDirection direction = new VeloDirection();
@@ -69,6 +69,10 @@ public class GeoUtil {
 
     public static List<VeloDirection> getVeloDirectionList() {
             return veloDirectionList;
+    }
+
+    public static List<LatLng> getCoordinateList() {
+        return coordinateList;
     }
 
     public static GeoJsonLayer convert(GoogleMap mMap, JSONObject json) throws JSONException {
@@ -110,8 +114,9 @@ public class GeoUtil {
                 getJSONObject(0).
                 getJSONArray("features");
 
-        //reset veloDirectionList
+        //reset veloDirectionList, nav_coordinate
         veloDirectionList = new ArrayList<>();
+        coordinateList = new ArrayList<>();
 
         for (int i = 0; i < features.length(); i++) {
             JSONObject feature = features.getJSONObject(i);
@@ -122,6 +127,7 @@ public class GeoUtil {
 
             GeoJsonLineString cgline = createPathFromCompressedGeometry(cg);
             GeoJsonPoint endPoint = new GeoJsonPoint(cgline.getCoordinates().get(0));
+            coordinateList.add(endPoint.getCoordinates());
             GeoJsonFeature epFeature = new GeoJsonFeature(endPoint, null, null, null);
             GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
             pointStyle.setTitle(instruction);

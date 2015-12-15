@@ -38,8 +38,6 @@
                 android:resource="@xml/searchable" />
         </activity>
 
-        <activity android:name=".RouteInfoActivity" />
-
         <activity
             android:name="ch.ethz.gis.maps.RoutePreviewFragment"
             android:label="Map"
@@ -48,7 +46,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="<INSERT KEY>"/>
+            android:value="AIzaSyAm4raaEtsZyfV1atwBrUiuA_1xC_hLAnU"/>
 
     </application>
 </manifest>

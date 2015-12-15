@@ -70,11 +70,11 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import ch.ethz.gis.databean.VeloDirection;
+import ch.ethz.gis.databean.VeloRoute;
 import ch.ethz.gis.helper.CoordinatesUtil;
 import ch.ethz.gis.helper.GeoUtil;
 import ch.ethz.gis.helper.GeofenceTransitionsIntentService;
@@ -83,7 +83,6 @@ import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.velotemplate.R;
 import ch.ethz.gis.velotemplate.VeloDirectionListFragment;
-import ch.ethz.gis.databean.VeloRoute;
 
 
 public class RoutePreviewFragment extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -317,7 +316,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
             public void onClick(View v) {
                 Location destLoc = GeoUtil.LatLngToLocation(routeStartPoint);
                 cameraLookFromTo(mMap, myLoc, destLoc);
-                slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+                //slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             }
         });
 
@@ -338,17 +337,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                     navToStation();
                 } else if (which == 1) {
                     navToRoute();
-
-                    /**
-                     * Make sure these 2 items are set in the device
-                     *     1. Google settings -> Location -> Mode -> High accuracy
-                     *     2. Dev settings -> Allow mock location
-                     * To test geofence on the emulator, paste the command below to terminal:
-                     *     echo 'pos={47.377,8.537,0} motion={10,0,0} turnrate=0 tzdiff=0' | nc ktrax-sim.kisstech.ch 48888 | nc localhost 5554
-                     */
-                    removeGeofencesFromService(); // clear the old geofences
-                    createGeofenceList();
-                    addGeofencesToService();
 
                     /**
                      *  Some steps about the routing service
@@ -399,9 +387,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         rentalStationSwiss[0] = CoordinatesUtil.WGStoCHy(bestStation.latitude, bestStation.longitude);
         rentalStationSwiss[1] = CoordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
         volleyLoadRoute(locationSwiss[0], locationSwiss[1], rentalStationSwiss[0], rentalStationSwiss[1]);
-
-        //Location destLoc = GeoUtil.LatLngToLocation(bestStation);
-        //cameraLookFromTo(mMap, myLoc, destLoc);
 
         return true;
     }
@@ -465,7 +450,18 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
                                 TextView navi = (TextView) findViewById(R.id.navigation_summary);
                                 navi.setText(totalTime + " min (" + totalLength+ " km)");
+
                                 showDirectionList();
+                                /**
+                                 * Make sure these 2 items are set in the device
+                                 *     1. Google settings -> Location -> Mode -> High accuracy
+                                 *     2. Dev settings -> Allow mock location
+                                 * To test geofence on the emulator, paste the command below to terminal:
+                                 *     echo 'pos={47.377,8.537,0} motion={10,0,0} turnrate=0 tzdiff=0' | nc ktrax-sim.kisstech.ch 48888 | nc localhost 5554
+                                 */
+                                removeGeofencesFromService(); // clear the old geofences
+                                createGeofenceList();
+                                addGeofencesToService();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -720,34 +716,22 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
     private void createGeofenceList() {
         List<VeloDirection> veloDirections = GeoUtil.getVeloDirectionList();
+        List<LatLng> veloCoordination = GeoUtil.getCoordinateList();
         mGeofenceList = new ArrayList<Geofence>();
 
-        mGeofenceList.add(new Geofence.Builder()
-                // Set the request ID of the geofence. This is a string to identify this
-                // geofence.
-                .setRequestId("Enter Velostation HB Süd")  // Set an unique string as Id
-                .setCircularRegion(
-                        47.378,
-                        8.537,
-                        30              // radius = 30m
-                )
-                .setExpirationDuration(60 * 60 * 1000) // the geofence will expire after 1 hour
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                        Geofence.GEOFENCE_TRANSITION_EXIT)
-                .build());
-        // TODO: Replace with the code below once getLatitude/getLongitude are implemented
-//        for (int i = 0; i < veloDirections.size(); i++) {
-//            VeloDirection direction = veloDirections.get(i);
-//            mGeofenceList.add(new Geofence.Builder()
-//                    .setRequestId(direction.getText())
-//                    .setCircularRegion(
-//                            direction.getLatitude(),
-//                            direction.getLongitude(),
-//                            10  // geofence radius = 10m
-//                    )
-//                    .setExpirationDuration(60 * 60 * 1000) // the geofence will expire after 1 hour
-//                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-//                    .build());
-//        }
+        for (int i = 0; i < veloDirections.size(); i++) {
+            VeloDirection direction = veloDirections.get(i);
+            LatLng coord = veloCoordination.get(i);
+            mGeofenceList.add(new Geofence.Builder()
+                    .setRequestId(direction.getText())
+                    .setCircularRegion(
+                            coord.latitude,
+                            coord.longitude,
+                            100
+                    )
+                    .setExpirationDuration(60 * 60 * 1000) // the geofence will expire after 1 hour
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                    .build());
+        }
     }
 }
