@@ -1,7 +1,6 @@
 package ch.ethz.gis.helper;
 
 /**
- * Created by Shuang Wu on 11/9/15.
  * Source: https://developer.android.com/training/volley/requestqueue.html#singleton
  */
 

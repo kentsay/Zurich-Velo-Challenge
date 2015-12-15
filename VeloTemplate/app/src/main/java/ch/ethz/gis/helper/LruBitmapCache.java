@@ -1,7 +1,6 @@
 package ch.ethz.gis.helper;
 
 /**
- * Created by Shuang Wu on 11/9/15.
  * Source: http://www.androidhive.info/2014/05/android-working-with-volley-library-1/
  */
 

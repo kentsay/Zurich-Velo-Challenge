@@ -38,7 +38,6 @@ import ch.ethz.gis.helper.GeoUtil;
 import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.helper.XMLRequest;
 
-
 public class NearbyFragment extends Fragment {
 
     //TODO: get current location and return near by rental station

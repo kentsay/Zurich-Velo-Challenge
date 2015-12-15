@@ -14,9 +14,6 @@ import java.util.List;
 
 import ch.ethz.gis.velotemplate.R;
 
-/**
- * Created by hoisee on 12/11/15.
- */
 public class GeofenceTransitionsIntentService extends IntentService {
 
     private static String TAG = "Geofence";

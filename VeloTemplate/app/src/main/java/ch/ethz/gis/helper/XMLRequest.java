@@ -1,9 +1,5 @@
 package ch.ethz.gis.helper;
 
-/**
- * Created by Shuang Wu on 11/29/15.
- */
-
 import android.util.Xml;
 
 import com.android.volley.NetworkResponse;
