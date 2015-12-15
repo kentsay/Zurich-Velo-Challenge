@@ -22,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -118,6 +120,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
 
     private WebView myWebView;
     private SlidingUpPanelLayout slidingLayout;
+    private Button navigationBtn;
 
     public int[] getDimensions () {return dimensions;}
     public Projection getProjection(){ return projection;}
@@ -305,6 +308,16 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         //init sliding layout and hide in the beginning tail user start navigation
         slidingLayout = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
         slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
+        //init navigation button and bind button listener
+        navigationBtn = (Button) findViewById(R.id.btn_nav);
+        navigationBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Location destLoc = GeoUtil.LatLngToLocation(routeStartPoint);
+                cameraLookFromTo(mMap, myLoc, destLoc);
+                slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            }
+        });
     }
 
 
@@ -383,8 +396,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         rentalStationSwiss[1] = CoordinatesUtil.WGStoCHx(bestStation.latitude, bestStation.longitude);
         volleyLoadRoute(locationSwiss[0], locationSwiss[1], rentalStationSwiss[0], rentalStationSwiss[1]);
 
-        Location destLoc = GeoUtil.LatLngToLocation(bestStation);
-        cameraLookFromTo(mMap, myLoc, destLoc);
+        //Location destLoc = GeoUtil.LatLngToLocation(bestStation);
+        //cameraLookFromTo(mMap, myLoc, destLoc);
 
         return true;
     }
@@ -412,8 +425,6 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
         double[] destination = CoordinatesUtil.WGS84toLV03(routeStartPoint.latitude, routeStartPoint.longitude, 0);
         volleyLoadRoute(location[0], location[1], destination[0], destination[1]);
 
-        Location destLoc = GeoUtil.LatLngToLocation(routeStartPoint);
-        cameraLookFromTo(mMap, myLoc, destLoc);
     }
 
     private void showDirectionList() {
@@ -448,9 +459,8 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                                 int totalLength = GeoUtil.extractSummary(response, "totalLength");
                                 int totalTime   = GeoUtil.extractSummary(response, "totalTime");
 
-                                //TODO: add summary in a better way instead of using toast
-                                Toast toast = Toast.makeText(context, totalTime + " min (" + totalLength+ " km)", Toast.LENGTH_LONG);
-                                toast.show();
+                                TextView navi = (TextView) findViewById(R.id.navigation_summary);
+                                navi.setText(totalTime + " min (" + totalLength+ " km)");
                                 showDirectionList();
 
                             } catch (JSONException e) {

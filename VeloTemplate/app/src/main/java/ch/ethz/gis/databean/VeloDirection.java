@@ -1,23 +1,26 @@
 package ch.ethz.gis.databean;
 
 
+import java.text.DecimalFormat;
+
 public class VeloDirection {
 
-    private double length;
-    private double time;
+    private Double length;
+    private Double time;
     private String text;
     private String directionType;
 
-    public double getLength() {
-        return length;
+    public int getLength() {
+        return length.intValue();
     }
 
     public void setLength(double length) {
         this.length = length;
     }
 
-    public double getTime() {
-        return time;
+    public String getTime() {
+        DecimalFormat df = new DecimalFormat("#.##");
+        return df.format(time);
     }
 
     public void setTime(double time) {

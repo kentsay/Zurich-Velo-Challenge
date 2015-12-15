@@ -2,6 +2,7 @@ package ch.ethz.gis.adapter;
 
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,12 +50,22 @@ public class VeloDirectionAdapter extends BaseAdapter {
 
         TextView direction_info    = (TextView)convertView.findViewById(R.id.direction_info);
         TextView direction_summary = (TextView)convertView.findViewById(R.id.direction_summary);
-        ImageView direction_icon   = (ImageView)convertView.findViewById(R.id.direction_indicator);
+        //ImageView direction_icon   = (ImageView)convertView.findViewById(R.id.direction_indicator);
 
         VeloDirection direction = directionList.get(position);
-
-        direction_info.setText(direction.getText());
-        direction_summary.setText(direction.getLength() + "m(" + direction.getTime() + "m)");
+        switch (direction.getText()) {
+            case "Start at Location 1":
+                direction_info.setText("Your Location");
+                direction_summary.setText("");
+                break;
+            default:
+                direction_summary.setText(direction.getLength() + " m (" + direction.getTime() + " min)");
+                direction_info.setText(direction.getText());
+        }
+        if (direction.getText().substring(0, 6) == "Finish") {
+            direction_info.setText("Your Destination");
+            direction_summary.setText("");
+        }
 
         return convertView;
     }

@@ -41,7 +41,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/name"
+                    android:id="@+id/navigation_summary"
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     android:layout_weight="1"
@@ -59,7 +59,8 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:text="Start Navigation"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    />
 
             </LinearLayout>
 
