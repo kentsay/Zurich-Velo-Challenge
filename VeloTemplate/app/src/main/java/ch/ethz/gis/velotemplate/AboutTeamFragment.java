@@ -5,22 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.TextView;
 
 public class AboutTeamFragment extends Fragment {
-
-    //TODO: get current location and return near by rental station
-
-    public static AboutTeamFragment newInstance(String param1, String param2) {
-        AboutTeamFragment fragment = new AboutTeamFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public AboutTeamFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,11 +15,17 @@ public class AboutTeamFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.about_team, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        View rootView = inflater.inflate(R.layout.about_team, container, false);
+        TextView issue   = (TextView) rootView.findViewById(R.id.issue);
+        TextView contact = (TextView) rootView.findViewById(R.id.contact);
+        issue.setText("Ken Tsay (tsayk@student.ethz.ch)\n" +
+                      "Shuang Wu (wus@student.ethz.ch)\n" +
+                      "Jerome Leibacher (jeromel@student.ethz.ch)");
+
+        contact.setText("The source code of this application is available under the Creative Commons (CC) license:\n" +
+                        "https://github.com/kentsay/Zurich-Velo-Challenge");
+        return rootView;
     }
-
-
 }
