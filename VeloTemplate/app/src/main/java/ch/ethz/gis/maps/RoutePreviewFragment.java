@@ -727,7 +727,7 @@ public class RoutePreviewFragment extends AppCompatActivity implements OnMapRead
                     .setCircularRegion(
                             coord.latitude,
                             coord.longitude,
-                            100
+                            35
                     )
                     .setExpirationDuration(60 * 60 * 1000) // the geofence will expire after 1 hour
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)

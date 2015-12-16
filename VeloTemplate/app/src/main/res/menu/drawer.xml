@@ -12,7 +12,7 @@
             android:id="@+id/favourite"
             android:checked="false"
             android:icon="@drawable/ic_star_black"
-            android:title="Favourite" />
+            android:title="Favorite" />
 
         <item
             android:id="@+id/rental"
