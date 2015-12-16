@@ -98,6 +98,16 @@ public class VeloChallengeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void setNavigationView() {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -132,10 +142,16 @@ public class VeloChallengeActivity extends AppCompatActivity {
                 }
                 if (fragment != null) {
                     FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                    fragmentManager.beginTransaction()
+                                   .replace(R.id.content_frame, fragment)
+                                   .addToBackStack(fragment.getClass().getName())
+                                   .commit();
                 } else if (listFragment != null) {
                     FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, listFragment).commit();
+                    fragmentManager.beginTransaction()
+                                   .replace(R.id.content_frame, listFragment)
+                                   .addToBackStack(listFragment.getClass().getName())
+                                   .commit();
                 } else {
                     Log.e("VeloChallengeActivity", "Error in creating fragment");
                 }
