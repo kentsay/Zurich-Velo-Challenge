@@ -31,5 +31,5 @@ dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.4+'
     compile 'com.github.rahatarmanahmed:circularprogressview:2.4.0'
     compile project(":volley")
-
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
 }
