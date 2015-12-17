@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ffffff"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:elevation="3dp" >
@@ -33,10 +33,12 @@
             android:text="Direction info"
             android:textSize="16sp"
             android:textColor="#289AF0"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="10dp"
             android:typeface="normal"
             android:textStyle="bold"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="8dp" />
 
         <TextView
             android:id="@+id/direction_summary"
@@ -47,9 +49,11 @@
             android:textStyle="bold"
             android:textColor="#414C54"
             android:textAlignment="textEnd"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="10dp"
             android:typeface="monospace"
-            android:layout_below="@+id/direction_info" />
+            android:layout_below="@+id/direction_info"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp" />
 
     </RelativeLayout>
 </FrameLayout>
