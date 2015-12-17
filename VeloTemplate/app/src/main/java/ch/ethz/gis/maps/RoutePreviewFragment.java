@@ -81,8 +81,8 @@ import ch.ethz.gis.helper.GeofenceTransitionsIntentService;
 import ch.ethz.gis.helper.SharedPreference;
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.helper.VolleyHelper;
-import ch.ethz.gis.velotemplate.R;
-import ch.ethz.gis.velotemplate.VeloDirectionListFragment;
+import ch.ethz.gis.fragment.R;
+import ch.ethz.gis.fragment.VeloDirectionListFragment;
 
 
 public class RoutePreviewFragment extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {

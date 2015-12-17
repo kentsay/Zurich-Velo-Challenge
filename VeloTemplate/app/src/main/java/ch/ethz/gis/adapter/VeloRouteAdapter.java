@@ -19,7 +19,7 @@ import com.android.volley.VolleyError;
 import java.util.List;
 
 import ch.ethz.gis.helper.VolleyHelper;
-import ch.ethz.gis.velotemplate.R;
+import ch.ethz.gis.fragment.R;
 import ch.ethz.gis.databean.VeloRoute;
 
 public class VeloRouteAdapter extends BaseAdapter {

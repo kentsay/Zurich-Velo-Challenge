@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.gis.databean.VeloDirection;
-import ch.ethz.gis.velotemplate.R;
+import ch.ethz.gis.fragment.R;
 
 public class GeoUtil {
     public enum LineType {BIKE_ROUTE, NAVIGATION};

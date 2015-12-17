@@ -15,12 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 
 import ch.ethz.gis.helper.VolleyHelper;
-import ch.ethz.gis.velotemplate.AboutTeamFragment;
-import ch.ethz.gis.velotemplate.CategoryFragment;
-import ch.ethz.gis.velotemplate.FavouriteFragment;
-import ch.ethz.gis.velotemplate.FilterFragment;
-import ch.ethz.gis.velotemplate.NearbyFragment;
-import ch.ethz.gis.velotemplate.R;
+import ch.ethz.gis.fragment.AboutTeamFragment;
+import ch.ethz.gis.fragment.CategoryFragment;
+import ch.ethz.gis.fragment.FavouriteFragment;
+import ch.ethz.gis.fragment.FilterFragment;
+import ch.ethz.gis.fragment.NearbyFragment;
+import ch.ethz.gis.fragment.R;
 
 public class VeloChallengeActivity extends AppCompatActivity {
 

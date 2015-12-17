@@ -1,4 +1,4 @@
-package ch.ethz.gis.velotemplate;
+package ch.ethz.gis.fragment;
 
 import org.junit.Test;
 

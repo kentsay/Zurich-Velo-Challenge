@@ -2,18 +2,16 @@ package ch.ethz.gis.adapter;
 
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
 import ch.ethz.gis.databean.VeloDirection;
-import ch.ethz.gis.velotemplate.R;
+import ch.ethz.gis.fragment.R;
 
 public class VeloDirectionAdapter extends BaseAdapter {
 

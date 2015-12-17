@@ -1,7 +1,6 @@
 package ch.ethz.gis.helper;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
@@ -11,8 +10,6 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.List;
-
-import ch.ethz.gis.velotemplate.R;
 
 public class GeofenceTransitionsIntentService extends IntentService {
 
