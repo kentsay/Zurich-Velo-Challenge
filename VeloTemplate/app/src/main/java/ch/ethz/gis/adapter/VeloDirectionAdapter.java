@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ch.ethz.gis.databean.VeloDirection;
-import ch.ethz.gis.fragment.R;
+import ch.ethz.gis.R;
 
 public class VeloDirectionAdapter extends BaseAdapter {
 

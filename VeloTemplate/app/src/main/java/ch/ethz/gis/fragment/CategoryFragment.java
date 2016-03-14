@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import ch.ethz.gis.R;
+
 
 public class CategoryFragment extends Fragment implements View.OnClickListener{
     private Bundle args;
@@ -20,7 +22,6 @@ public class CategoryFragment extends Fragment implements View.OnClickListener{
         View rootView = inflater.inflate(R.layout.category_view, container, false);
         context = getActivity().getApplicationContext();
         args = new Bundle();
-
         ImageButton easy = (ImageButton)rootView.findViewById(R.id.button1);
         ImageButton medium = (ImageButton)rootView.findViewById(R.id.button2);
         ImageButton hard = (ImageButton)rootView.findViewById(R.id.button3);

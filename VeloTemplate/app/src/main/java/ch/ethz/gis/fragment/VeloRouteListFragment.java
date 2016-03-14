@@ -15,6 +15,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.gis.R;
 import ch.ethz.gis.databean.VeloRoute;
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.adapter.VeloRouteAdapter;

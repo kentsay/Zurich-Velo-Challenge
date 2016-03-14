@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import ch.ethz.gis.R;
+
 public class AboutTeamFragment extends Fragment {
 
     @Override

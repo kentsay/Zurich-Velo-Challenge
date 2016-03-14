@@ -30,6 +30,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ch.ethz.gis.R;
 import ch.ethz.gis.helper.GeoUtil;
 import ch.ethz.gis.helper.VolleyHelper;
 import ch.ethz.gis.helper.XMLRequest;

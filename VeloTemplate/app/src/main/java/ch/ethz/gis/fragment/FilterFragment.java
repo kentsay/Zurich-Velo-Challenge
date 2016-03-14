@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import ch.ethz.gis.R;
+
 public class FilterFragment extends Fragment {
 
     private TextView distance;

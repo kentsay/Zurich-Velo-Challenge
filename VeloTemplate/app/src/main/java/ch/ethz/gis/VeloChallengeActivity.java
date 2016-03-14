@@ -20,7 +20,6 @@ import ch.ethz.gis.fragment.CategoryFragment;
 import ch.ethz.gis.fragment.FavouriteFragment;
 import ch.ethz.gis.fragment.FilterFragment;
 import ch.ethz.gis.fragment.NearbyFragment;
-import ch.ethz.gis.fragment.R;
 
 public class VeloChallengeActivity extends AppCompatActivity {
 

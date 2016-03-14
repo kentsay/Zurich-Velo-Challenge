@@ -73,6 +73,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import ch.ethz.gis.R;
 import ch.ethz.gis.databean.VeloDirection;
 import ch.ethz.gis.databean.VeloRoute;
 import ch.ethz.gis.helper.CoordinatesUtil;
@@ -81,7 +82,6 @@ import ch.ethz.gis.helper.GeofenceTransitionsIntentService;
 import ch.ethz.gis.helper.SharedPreference;
 import ch.ethz.gis.helper.VeloDbHelper;
 import ch.ethz.gis.helper.VolleyHelper;
-import ch.ethz.gis.fragment.R;
 import ch.ethz.gis.fragment.VeloDirectionListFragment;
 
 

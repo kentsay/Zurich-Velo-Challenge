@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import ch.ethz.gis.R;
 import ch.ethz.gis.adapter.VeloDirectionAdapter;
 import ch.ethz.gis.helper.GeoUtil;
 

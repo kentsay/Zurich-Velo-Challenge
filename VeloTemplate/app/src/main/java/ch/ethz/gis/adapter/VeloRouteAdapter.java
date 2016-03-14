@@ -19,7 +19,7 @@ import com.android.volley.VolleyError;
 import java.util.List;
 
 import ch.ethz.gis.helper.VolleyHelper;
-import ch.ethz.gis.fragment.R;
+import ch.ethz.gis.R;
 import ch.ethz.gis.databean.VeloRoute;
 
 public class VeloRouteAdapter extends BaseAdapter {
@@ -55,7 +55,7 @@ public class VeloRouteAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.route_item, parent,false);
         }
 
-        TextView routeName = (TextView)convertView.findViewById(R.id.route_name);
+        TextView routeName = (TextView)convertView.findViewById(R.id.routeName);
         TextView routeInfo = (TextView)convertView.findViewById(R.id.route_info);
         TextView routeDistance  = (TextView)convertView.findViewById(R.id.route_distance);
         ImageView routeSnapshot = (ImageView)convertView.findViewById(R.id.route_map);
