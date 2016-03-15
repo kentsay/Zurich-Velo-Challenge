@@ -14,7 +14,7 @@ Part of the data is provided by [Zurich Open Data](https://data.stadt-zuerich.ch
 
 ### Screenshots
 
-![Overview][screenshots/overview.png]
+![Overview](screenshots/overview.png "over view")
 
 ## License
 
