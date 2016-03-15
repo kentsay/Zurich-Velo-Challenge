@@ -15,10 +15,10 @@ Part of the data is provided by [Zurich Open Data](https://data.stadt-zuerich.ch
 ### Screenshots
 
 
-![Category page](https://www.dropbox.com/s/ijxue39eh40d3pl/category_page.png?dl=0)
-![Route list](https://www.dropbox.com/s/6f1nj9k8z0lwa56/route_list.png?dl=0)
-![Navigation](https://www.dropbox.com/s/zqbo84wfipmuc9f/navigation.png?dl=0)
-![Detail direction](https://www.dropbox.com/s/0recix96ftoavgl/navigation_detail.png?dl=0)
+![Category page][https://www.dropbox.com/s/ijxue39eh40d3pl/category_page.png?dl=0]
+![Route list][https://www.dropbox.com/s/6f1nj9k8z0lwa56/route_list.png?dl=0]
+![Navigation][https://www.dropbox.com/s/zqbo84wfipmuc9f/navigation.png?dl=0]
+![Detail direction][https://www.dropbox.com/s/0recix96ftoavgl/navigation_detail.png?dl=0]
 
 
 ## License
