@@ -14,11 +14,7 @@ Part of the data is provided by [Zurich Open Data](https://data.stadt-zuerich.ch
 
 ### Screenshots
 
-* ![Category page](screenshots/category_page.png "Starting page of the app")
-* ![Route list](screenshots/route_list.png "View all the routes with its relevant data")
-* ![Navigation](screenshots/navigation.png "Navigation mode")
-* ![Detail direction](screehshots/navigation_detail.png "Detail directions")
-
+![Overview][screenshots/overview.png]
 
 ## License
 
