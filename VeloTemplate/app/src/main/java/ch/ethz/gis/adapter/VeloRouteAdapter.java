@@ -55,7 +55,7 @@ public class VeloRouteAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.route_item, parent,false);
         }
 
-        TextView routeName = (TextView)convertView.findViewById(R.id.routeName);
+        TextView routeName = (TextView)convertView.findViewById(R.id.route_name);
         TextView routeInfo = (TextView)convertView.findViewById(R.id.route_info);
         TextView routeDistance  = (TextView)convertView.findViewById(R.id.route_distance);
         ImageView routeSnapshot = (ImageView)convertView.findViewById(R.id.route_map);
