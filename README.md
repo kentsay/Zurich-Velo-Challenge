@@ -1,14 +1,6 @@
 # Zurich-Velo-Challenge
 
-Project for ETHZ 103-0778-00L GIS and Geoinformatics Lab[2015]. We aim to build a mobile app which use Zurich geoinformation open data and make a contribution to the Zurich Open Data community.
-
-### Features
-The app provides bike routes with different levels and types which can be chose by user preference.
-
-* Types: city tour, mountain biking, lakeside, etc
-* Info: length, elevation, special spots nearby
-
-The app shows detail information of the selected route such as distance and duration. Users can use the routing service to start their velo journey. Besides this, the app also provides real time nearby velo rental station informations such as location, status, etc. 
+Do you enjoy biking and exploring new routes? The new Zurich-Velo-Challenge(ZVC) app helps you discover new ways in the city of Zurich to make your next cycling trip awesome! More then 2500 routes are available on ZVC to help you discover this exciting and unique city. View routes on a map designed for cyclists that shows you relevant data at a glance, like distance and elevation. ZVC also assists you with navigation as it shows your current location and detail directions on an interactive map in real time while you’re following your route. Download it right now on your Android device and start your next journey.
 
 ### Data set
 Data set we are planning to use in this app as shown as follow:
@@ -20,8 +12,13 @@ Data set we are planning to use in this app as shown as follow:
 
 Part of the data is provided by [Zurich Open Data](https://data.stadt-zuerich.ch/).
 
-### Mockup
-We created a mockup of our app by using [popapp](popapp.in). You can found it [here](https://popapp.in/w/projects/560d4312afde789108c11025/mockups).
+### Screenshots
+
+
+![Category page](https://www.dropbox.com/s/ijxue39eh40d3pl/category_page.png?dl=0)
+![Route list](https://www.dropbox.com/s/6f1nj9k8z0lwa56/route_list.png?dl=0)
+![Navigation](https://www.dropbox.com/s/zqbo84wfipmuc9f/navigation.png?dl=0)
+![Detail direction](https://www.dropbox.com/s/0recix96ftoavgl/navigation_detail.png?dl=0)
 
 
 ## License
